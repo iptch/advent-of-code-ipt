@@ -18,17 +18,11 @@ def part1(data):
 
     sum = 0
 
-    data_left = data[0].copy()
-    data_right = data[1].copy()
+    data[0].sort()
+    data[1].sort()
 
-    for i in range(len(data_left)):
-        min_left = min(data_left)
-        data_left[data_left.index(min_left)] = math.inf
-
-        min_right = min(data_right)
-        data_right[data_right.index(min_right)] = math.inf
-
-        sum += abs(min_left - min_right)
+    for i in range(len(data[0])):
+        sum += abs(data[0][i] - data[1][i])
 
     return sum
 
