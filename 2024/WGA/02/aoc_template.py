@@ -2,7 +2,9 @@
 
 import pathlib
 import sys
-import statistics
+
+def is_safe(diff):
+    return all(i >= 1 and i <= 3 for i in diff) or all(i <= -1 and i >= -3 for i in diff)
 
 def parse(puzzle_input):
     """Parse input."""
@@ -19,9 +21,7 @@ def part1(data):
     count = 0
 
     for row in data:
-        diff = [j-i for i, j in zip(row[:-1], row[1:])]
-
-        if all(i >= 1 and i <= 3 for i in diff) or all(i <= -1 and i >= -3 for i in diff):
+        if is_safe([j - i for i, j in zip(row[:-1], row[1:])]):
             count += 1
 
     return count
@@ -32,18 +32,14 @@ def part2(data):
     count = 0
 
     for row in data:
-        diff = [j - i for i, j in zip(row[:-1], row[1:])]
-
-        if all(i >= 1 and i <= 3 for i in diff) or all(i <= -1 and i >= -3 for i in diff):
+        if is_safe([j - i for i, j in zip(row[:-1], row[1:])]):
             count += 1
         else:
             for n in range(len(row)):
                 tmp = row.copy()
                 tmp.pop(n)
 
-                diff = [j - i for i, j in zip(tmp[:-1], tmp[1:])]
-
-                if all(i >= 1 and i <= 3 for i in diff) or all(i <= -1 and i >= -3 for i in diff):
+                if is_safe([j - i for i, j in zip(tmp[:-1], tmp[1:])]):
                     count += 1
                     break
 
