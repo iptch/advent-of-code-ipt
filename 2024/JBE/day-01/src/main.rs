@@ -7,7 +7,7 @@ type Result<T> = ::std::result::Result<T, Box<dyn ::std::error::Error>>;
 
 fn main() -> Result<()> {
     let content = fs::read_to_string("day-01/input.txt")?;
-    let lines = parse(&content);
+    let lines = parse(&content)?;
     let res_1 = part_1(&lines)?;
     let res_2 = part_2(&lines)?;
     println!("Part 1: {}", res_1);
@@ -49,8 +49,8 @@ fn part_2(lines: &[Line]) -> Result<u32> {
         .ok_or("no input".into())
 }
 
-fn parse(content: &str) -> Vec<Line> {
-    content.lines().map(|l| l.parse().unwrap()).collect()
+fn parse(content: &str) -> Result<Vec<Line>> {
+    content.lines().map(|l| l.parse()).collect()
 }
 
 #[derive(Debug)]
@@ -82,11 +82,20 @@ mod test {
     use crate::*;
 
     #[test]
-    fn test_example() -> Result<()> {
+    fn test_example_part_1() -> Result<()> {
         let content = fs::read_to_string("example.txt")?;
-        let lines = parse(&content);
+        let lines = parse(&content)?;
         let res = part_1(&lines)?;
         assert_eq!(11, res);
+        Ok(())
+    }
+
+    #[test]
+    fn test_example_part_2() -> Result<()> {
+        let content = fs::read_to_string("example.txt")?;
+        let lines = parse(&content)?;
+        let res = part_2(&lines)?;
+        assert_eq!(31, res);
         Ok(())
     }
 }
