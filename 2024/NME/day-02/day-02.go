@@ -1,9 +1,6 @@
-package main
+package day02
 
 import (
-	"bufio"
-	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -31,16 +28,10 @@ func isSafe(report []int) bool {
 	return true
 }
 
-func main() {
-	// read and parse input
-	readFile, _ := os.Open("2024/NME/day-02/input.txt")
-
-	fileScanner := bufio.NewScanner(readFile)
-	fileScanner.Split(bufio.ScanLines)
-
+func parse(lines []string) [][]int {
 	var reports [][]int
-	for fileScanner.Scan() {
-		line := strings.Split(fileScanner.Text(), " ")
+	for _, line := range lines {
+		line := strings.Split(line, " ")
 		var report []int
 		for _, reading := range line {
 			intReading, _ := strconv.Atoi(reading)
@@ -48,6 +39,11 @@ func main() {
 		}
 		reports = append(reports, report)
 	}
+	return reports
+}
+
+func PartOne(lines []string) string {
+	reports := parse(lines)
 
 	safeReports := 0
 	for _, report := range reports {
@@ -55,9 +51,13 @@ func main() {
 			safeReports++
 		}
 	}
-	fmt.Println(safeReports)
+	return strconv.Itoa(safeReports)
+}
 
-	safeReportsPart2 := 0
+func PartTwo(lines []string) string {
+	reports := parse(lines)
+
+	safeReports := 0
 	for _, report := range reports {
 		isSafePart2 := false
 		for i, _ := range report {
@@ -70,9 +70,8 @@ func main() {
 			isSafePart2 = isSafePart2 || isSafe(amendedReport)
 		}
 		if isSafePart2 {
-			safeReportsPart2++
+			safeReports++
 		}
 	}
-	fmt.Println(safeReportsPart2)
-
+	return strconv.Itoa(safeReports)
 }
