@@ -42,11 +42,9 @@ fn part_2(lines: &[Line]) -> Result<u32> {
             second.insert(&line.second, 1);
         }
     }
-    first
+    Ok(first
         .iter()
-        .map(|e| e * second.get(&e).unwrap_or(&0))
-        .reduce(|acc, e| acc + e)
-        .ok_or("no input".into())
+        .fold(0, |acc, e| acc + e * second.get(&e).unwrap_or(&0)))
 }
 
 fn parse(content: &str) -> Result<Vec<Line>> {

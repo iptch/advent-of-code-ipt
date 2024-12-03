@@ -27,9 +27,7 @@ fn part_1(lines: &[Line]) -> Result<i32> {
         .iter()
         .map(|e| &e.values)
         .flatten()
-        .map(|(f, s)| f * s)
-        .reduce(|acc, e| acc + e)
-        .ok_or("no input")?;
+        .fold(0, |acc, (f, s)| acc + f * s);
     Ok(sum)
 }
 
@@ -81,8 +79,7 @@ impl FromStr for Line {
                 (?P<first>[0-9]{1,3})
                 ,
                 (?P<second>[0-9]{1,3})
-                \)
-            "
+                \)"
             )
             .unwrap();
         }
