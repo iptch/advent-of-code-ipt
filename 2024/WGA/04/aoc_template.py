@@ -5,8 +5,6 @@ import sys
 import re
 from numpy import array, flipud
 
-
-
 def parse(puzzle_input):
     """Parse input."""
     return array([list(row) for row in puzzle_input.splitlines()])
