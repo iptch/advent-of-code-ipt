@@ -1,9 +1,6 @@
-package main
+package day01
 
 import (
-	"bufio"
-	"fmt"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
@@ -20,25 +17,24 @@ func count(slice []int, element int) int {
 	return count
 }
 
-func main() {
-	// read and parse input
-	readFile, _ := os.Open("2024/NME/day-01/input.txt")
-
-	fileScanner := bufio.NewScanner(readFile)
-	fileScanner.Split(bufio.ScanLines)
-
+func parse(lines []string) ([]int, []int) {
 	var list1 []int
 	var list2 []int
 
-	for fileScanner.Scan() {
-		a := strings.Split(fileScanner.Text(), "   ")
+	for _, line := range lines {
+		a := strings.Split(line, "   ")
 		num1, _ := strconv.Atoi(a[0])
 		num2, _ := strconv.Atoi(a[1])
 		list1 = append(list1, num1)
 		list2 = append(list2, num2)
 	}
 
-	// part 1
+	return list1, list2
+}
+
+func PartOne(lines []string) string {
+	list1, list2 := parse(lines)
+
 	slices.Sort(list1)
 	slices.Sort(list2)
 
@@ -51,12 +47,19 @@ func main() {
 		}
 		res += diff
 	}
-	fmt.Println(res)
 
-	// part 2
-	var res2 = 0
+	return strconv.Itoa(res)
+}
+
+func PartTwo(lines []string) string {
+	list1, list2 := parse(lines)
+
+	slices.Sort(list1)
+	slices.Sort(list2)
+
+	var res = 0
 	for _, number := range list1 {
-		res2 += count(list2, number) * number
+		res += count(list2, number) * number
 	}
-	fmt.Println(res2)
+	return strconv.Itoa(res)
 }

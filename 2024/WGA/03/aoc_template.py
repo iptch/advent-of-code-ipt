@@ -2,35 +2,40 @@
 
 import pathlib
 import sys
-import math
+import re
 
 def parse(puzzle_input):
     """Parse input."""
-    rows = puzzle_input.splitlines()
 
-    col1 = [int(row.split()[0]) for row in rows]
-    col2 = [int(row.split()[1]) for row in rows]
-    
-    return [col1, col2]
+    return puzzle_input
 
 def part1(data):
     """Solve part 1."""
+    matches = re.findall("mul\(\d{1,3},\d{1,3}\)", data)
+
     sum = 0
 
-    data[0].sort()
-    data[1].sort()
-
-    for i in range(len(data[0])):
-        sum += abs(data[0][i] - data[1][i])
+    for match in matches:
+        num = re.findall("\d{1,3}", match)
+        sum += int(num[0]) * int(num[1])
 
     return sum
 
 def part2(data):
     """Solve part 2."""
-    sum = 0
+    matches = re.findall("mul\(\d{1,3},\d{1,3}\)|do\(\)|don't\(\)", data)
 
-    for x in data[0]:
-        sum += x * data[1].count(x)
+    sum = 0
+    do_multiply = True
+
+    for match in matches:
+        if match == "do()":
+            do_multiply = True
+        elif match == "don't()":
+            do_multiply = False
+        elif do_multiply:
+            num = re.findall("\d{1,3}", match)
+            sum += int(num[0]) * int(num[1])
 
     return sum
 
