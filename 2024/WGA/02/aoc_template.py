@@ -3,7 +3,9 @@
 import pathlib
 import sys
 
-def is_safe(diff):
+def is_safe(row):
+    diff = [j-i for i, j in zip(row[:-1], row[1:])]
+
     return all(i >= 1 and i <= 3 for i in diff) or all(i <= -1 and i >= -3 for i in diff)
 
 def parse(puzzle_input):
@@ -21,7 +23,7 @@ def part1(data):
     count = 0
 
     for row in data:
-        if is_safe([j - i for i, j in zip(row[:-1], row[1:])]):
+        if is_safe(row):
             count += 1
 
     return count
@@ -32,14 +34,14 @@ def part2(data):
     count = 0
 
     for row in data:
-        if is_safe([j - i for i, j in zip(row[:-1], row[1:])]):
+        if is_safe(row):
             count += 1
         else:
             for n in range(len(row)):
                 tmp = row.copy()
                 tmp.pop(n)
 
-                if is_safe([j - i for i, j in zip(tmp[:-1], tmp[1:])]):
+                if is_safe(tmp):
                     count += 1
                     break
 

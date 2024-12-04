@@ -15,7 +15,6 @@ def parse(puzzle_input):
 
 def part1(data):
     """Solve part 1."""
-
     sum = 0
 
     data[0].sort()
@@ -28,7 +27,6 @@ def part1(data):
 
 def part2(data):
     """Solve part 2."""
-
     sum = 0
 
     for x in data[0]:

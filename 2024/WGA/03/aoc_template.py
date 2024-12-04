@@ -11,7 +11,6 @@ def parse(puzzle_input):
 
 def part1(data):
     """Solve part 1."""
-
     matches = re.findall("mul\(\d{1,3},\d{1,3}\)", data)
 
     sum = 0
@@ -24,7 +23,6 @@ def part1(data):
 
 def part2(data):
     """Solve part 2."""
-
     matches = re.findall("mul\(\d{1,3},\d{1,3}\)|do\(\)|don't\(\)", data)
 
     sum = 0
