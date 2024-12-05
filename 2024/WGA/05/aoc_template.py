@@ -38,17 +38,6 @@ def quick_sort(rules, update, low, high):
         quick_sort(rules, update, low, pivot-1)
         quick_sort(rules, update, pivot+1, high)
 
-def bubble_sort(rules, update):
-    sorted = update.copy()
-
-    for i in range(len(update)):
-        for j in range(i+1, len(update)):
-            if violates_rule(rules, update[i], update[j]):
-                sorted[i] = update[j]
-                sorted[j] = update[i]
-
-    return sorted
-
 def parse(puzzle_input):
     """Parse input."""
     input = puzzle_input.split("\n\n")
