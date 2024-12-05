@@ -1,39 +1,43 @@
 package day05
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 )
 
-func isValidOrderingOrFix(rules [][]int, ordering []int) bool {
-	var m = make(map[int]int)
-	for i, v := range ordering {
-		m[v] = i
-	}
-
-	ok := true
-	for _, rule := range rules {
-		first, second := rule[0], rule[1]
-
-		idxFirst, hasFirst := m[first]
-		idxSecond, hasSecond := m[second]
-
-		if hasFirst && hasSecond && idxFirst > idxSecond {
-			ordering[idxFirst], ordering[idxSecond] = ordering[idxSecond], ordering[idxFirst]
-			m[first], m[second] = idxSecond, idxFirst
-			ok = false
-		}
-	}
-
-	if !ok {
-		isValidOrderingOrFix(rules, ordering)
-	}
-
-	return ok
+type Rule struct {
+	Before int
+	After  int
 }
 
-func parse(lines []string) ([][]int, [][]int) {
-	var rules [][]int
+func areEqual(slice1 []int, slice2 []int) bool {
+	if len(slice1) != len(slice2) {
+		return false
+	}
+
+	for i := 0; i < len(slice1); i++ {
+		if slice1[i] != slice2[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func isValidOrderingOrFix(rules map[Rule]struct{}, ordering []int) bool {
+	original := make([]int, len(ordering))
+	copy(original, ordering)
+
+	sort.Slice(ordering, func(i, j int) bool {
+		_, exists := rules[Rule{ordering[i], ordering[j]}]
+		return exists
+	})
+
+	return areEqual(original, ordering)
+}
+
+func parse(lines []string) ([][]int, map[Rule]struct{}) {
+	rules := make(map[Rule]struct{})
 	var orderings [][]int
 
 	parsingRules := true
@@ -44,7 +48,7 @@ func parse(lines []string) ([][]int, [][]int) {
 			} else {
 				page1, _ := strconv.Atoi(line[:2])
 				page2, _ := strconv.Atoi(line[3:])
-				rules = append(rules, []int{page1, page2})
+				rules[Rule{page1, page2}] = struct{}{}
 			}
 		} else {
 			var ordering []int
@@ -55,11 +59,12 @@ func parse(lines []string) ([][]int, [][]int) {
 			orderings = append(orderings, ordering)
 		}
 	}
-	return rules, orderings
+
+	return orderings, rules
 }
 
 func PartOne(lines []string) string {
-	rules, orderings := parse(lines)
+	orderings, rules := parse(lines)
 
 	result := 0
 	for _, ordering := range orderings {
@@ -72,7 +77,7 @@ func PartOne(lines []string) string {
 }
 
 func PartTwo(lines []string) string {
-	rules, orderings := parse(lines)
+	orderings, rules := parse(lines)
 
 	result := 0
 	for _, ordering := range orderings {
