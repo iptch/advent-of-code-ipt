@@ -27,13 +27,8 @@ fn part_2(rules: &[OrderingRule], updates: &[Update]) -> usize {
         .filter(|update| !rules.iter().all(|r| update.respects(r)))
         .map(|e| e.clone())
         .collect();
-    while bad_updates
-        .iter()
-        .any(|update| !rules.iter().all(|r| update.respects(r)))
-    {
-        for update in bad_updates.iter_mut() {
-            rules.iter().for_each(|r| update.reorder(r));
-        }
+    for update in bad_updates.iter_mut() {
+        update.reorder(rules);
     }
     bad_updates
         .iter()
@@ -88,15 +83,15 @@ impl Update {
         first_idx.unwrap() < second_idx.unwrap()
     }
 
-    fn reorder(&mut self, rule: &OrderingRule) {
-        if let Some(first_idx) = self.pages.iter().position(|e| *e == rule.before) {
-            if let Some(second_idx) = self.pages.iter().position(|e| *e == rule.after) {
-                if first_idx > second_idx {
-                    let value = self.pages.remove(second_idx);
-                    self.pages.insert(first_idx, value);
+    fn reorder(&mut self, rules: &[OrderingRule]) {
+        self.pages.sort_by(|a, b| {
+            for rule in rules {
+                if rule.after == *a && rule.before == *b {
+                    return ::std::cmp::Ordering::Greater;
                 }
             }
-        }
+            ::std::cmp::Ordering::Less
+        })
     }
 
     fn get_middle(&self) -> usize {
