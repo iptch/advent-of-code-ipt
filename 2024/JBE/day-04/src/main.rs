@@ -9,14 +9,14 @@ type Result<T> = ::std::result::Result<T, Box<dyn ::std::error::Error>>;
 fn main() -> Result<()> {
     let content = fs::read_to_string("day-04/input.txt")?;
     let grid = parse(&content);
-    let res_1 = part_1(&grid)?;
-    let res_2 = part_2(&grid)?;
+    let res_1 = part_1(&grid);
+    let res_2 = part_2(&grid);
     println!("Part 1: {}", res_1);
     println!("Part 2: {}", res_2);
     Ok(())
 }
 
-fn part_1(grid: &Vec<Vec<char>>) -> Result<usize> {
+fn part_1(grid: &Vec<Vec<char>>) -> usize {
     let mut input = grid.clone();
     add_margins(&mut input);
     let mut count = 0;
@@ -26,10 +26,10 @@ fn part_1(grid: &Vec<Vec<char>>) -> Result<usize> {
             count = count + count_xmas_in_window(&window);
         }
     }
-    Ok(count)
+    count
 }
 
-fn part_2(grid: &Vec<Vec<char>>) -> Result<usize> {
+fn part_2(grid: &Vec<Vec<char>>) -> usize {
     let mut count = 0;
     for i in 0..grid.len() - MAS_WINDOW_SIZE + 1 {
         for j in 0..grid[i].len() - MAS_WINDOW_SIZE + 1 {
@@ -39,7 +39,7 @@ fn part_2(grid: &Vec<Vec<char>>) -> Result<usize> {
             }
         }
     }
-    Ok(count)
+    count
 }
 
 fn get_window_at(grid: &Vec<Vec<char>>, position: &(usize, usize), size: usize) -> Vec<Vec<char>> {
@@ -126,7 +126,7 @@ mod test {
     fn test_example_part_1() -> Result<()> {
         let content = fs::read_to_string("example-1.txt")?;
         let grid = parse(&content);
-        let res = part_1(&grid)?;
+        let res = part_1(&grid);
         assert_eq!(18, res);
         Ok(())
     }
@@ -135,7 +135,7 @@ mod test {
     fn test_example_part_2() -> Result<()> {
         let content = fs::read_to_string("example-2.txt")?;
         let grid = parse(&content);
-        let res = part_2(&grid)?;
+        let res = part_2(&grid);
         assert_eq!(9, res);
         Ok(())
     }

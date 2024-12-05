@@ -15,26 +15,25 @@ type Result<T> = ::std::result::Result<T, Box<dyn ::std::error::Error>>;
 fn main() -> Result<()> {
     let content = fs::read_to_string("day-03/input.txt")?;
     let lines = parse(&content)?;
-    let res_1 = part_1(&lines)?;
+    let res_1 = part_1(&lines);
     let res_2 = part_2(&content)?;
     println!("Part 1: {}", res_1);
     println!("Part 2: {}", res_2);
     Ok(())
 }
 
-fn part_1(lines: &[Line]) -> Result<i32> {
-    let sum = lines
+fn part_1(lines: &[Line]) -> i32 {
+    lines
         .iter()
         .map(|e| &e.values)
         .flatten()
-        .fold(0, |acc, (f, s)| acc + f * s);
-    Ok(sum)
+        .fold(0, |acc, (f, s)| acc + f * s)
 }
 
 fn part_2(content: &str) -> Result<i32> {
     let input = preprocess_input(content);
     let lines = parse(&input)?;
-    part_1(&lines)
+    Ok(part_1(&lines))
 }
 
 fn preprocess_input(input: &str) -> String {
@@ -101,7 +100,7 @@ mod test {
     fn test_example_part_1() -> Result<()> {
         let content = fs::read_to_string("example-1.txt")?;
         let lines = parse(&content)?;
-        let res = part_1(&lines)?;
+        let res = part_1(&lines);
         assert_eq!(161, res);
         Ok(())
     }

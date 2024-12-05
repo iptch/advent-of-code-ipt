@@ -8,14 +8,14 @@ type Result<T> = ::std::result::Result<T, Box<dyn ::std::error::Error>>;
 fn main() -> Result<()> {
     let content = fs::read_to_string("day-01/input.txt")?;
     let lines = parse(&content)?;
-    let res_1 = part_1(&lines)?;
-    let res_2 = part_2(&lines)?;
+    let res_1 = part_1(&lines);
+    let res_2 = part_2(&lines);
     println!("Part 1: {}", res_1);
     println!("Part 2: {}", res_2);
     Ok(())
 }
 
-fn part_1(lines: &[Line]) -> Result<u32> {
+fn part_1(lines: &[Line]) -> u32 {
     let mut first = Vec::new();
     let mut second = Vec::new();
     for line in lines {
@@ -28,10 +28,10 @@ fn part_1(lines: &[Line]) -> Result<u32> {
         .iter()
         .zip(second.iter())
         .fold(0, |acc, (f, s)| acc + f.abs_diff(*s));
-    Ok(distance)
+    distance
 }
 
-fn part_2(lines: &[Line]) -> Result<u32> {
+fn part_2(lines: &[Line]) -> u32 {
     let mut first = Vec::new();
     let mut second = HashMap::new();
     for line in lines {
@@ -42,9 +42,9 @@ fn part_2(lines: &[Line]) -> Result<u32> {
             second.insert(&line.second, 1);
         }
     }
-    Ok(first
+    first
         .iter()
-        .fold(0, |acc, e| acc + e * second.get(&e).unwrap_or(&0)))
+        .fold(0, |acc, e| acc + e * second.get(&e).unwrap_or(&0))
 }
 
 fn parse(content: &str) -> Result<Vec<Line>> {
@@ -83,7 +83,7 @@ mod test {
     fn test_example_part_1() -> Result<()> {
         let content = fs::read_to_string("example.txt")?;
         let lines = parse(&content)?;
-        let res = part_1(&lines)?;
+        let res = part_1(&lines);
         assert_eq!(11, res);
         Ok(())
     }
@@ -92,7 +92,7 @@ mod test {
     fn test_example_part_2() -> Result<()> {
         let content = fs::read_to_string("example.txt")?;
         let lines = parse(&content)?;
-        let res = part_2(&lines)?;
+        let res = part_2(&lines);
         assert_eq!(31, res);
         Ok(())
     }
