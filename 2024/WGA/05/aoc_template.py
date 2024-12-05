@@ -66,7 +66,6 @@ def part2(data):
     for update in data["updates"]:
         if not is_valid_update(data["rules"], update):
             quick_sort(data["rules"], update, 0, len(update)-1)
-            print(update)
             sum += update[int((len(update)-1) / 2)]
 
     return sum
