@@ -27,7 +27,7 @@ def part1(data):
     flipped = flipud(data)
 
     for i in range(-len(data[0])+1, len(data[0])):
-        main_diag = flipped.diagonal(i).tolist()
+        main_diag = flipped.diagonal(i)
         sum += len(re.findall(REGEX, "".join(main_diag)))
 
     return sum
@@ -39,9 +39,9 @@ def part2(data):
 
     for i in range(len(data[0]) - 2):
         for j in range(len(data[0]) - 2):
-            a = data[i:i+3, j:j+3]
+            matrix = data[i:i+3, j:j+3]
 
-            if re.search(REGEX, "".join(a.diagonal())) and re.search(REGEX, "".join(flipud(a).diagonal())):
+            if re.search(REGEX, "".join(matrix.diagonal())) and re.search(REGEX, "".join(flipud(matrix).diagonal())):
                 sum += 1
 
     return sum
