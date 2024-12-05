@@ -4,25 +4,72 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
-func timeIt(function func([]string) string, args []string) (string, time.Duration) {
-	start := time.Now()
-	result := function(args)
-	elapsed := time.Since(start)
-
-	return result, elapsed
+type Args struct {
+	Function  func([]string) string
+	Day       int
+	Part      int
+	InputFile string
 }
 
-func Run(partOne func([]string) string, partTwo func([]string) string, inputFile string) {
+type Result struct {
+	Solution string
+	Duration time.Duration
+}
+
+type Run struct {
+	Args   Args
+	Result Result
+}
+
+func reverseString(s string) string {
+	runes := []rune(s)
+	for i, j := 0, len(runes)-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+	return string(runes)
+}
+
+func timeIt(function func([]string) string, args []string) (string, time.Duration) {
+	start := time.Now()
+	solution := function(args)
+	elapsed := time.Since(start)
+
+	return solution, elapsed
+}
+
+func FormatWithApostrophe(n int64) string {
+	reversed := reverseString(strconv.FormatInt(n, 10))
+
+	// Insert apostrophes every 3 characters
+	var builder strings.Builder
+	for i, r := range reversed {
+		if i > 0 && i%3 == 0 {
+			builder.WriteRune('\'')
+		}
+		builder.WriteRune(r)
+	}
+
+	return reverseString(builder.String())
+}
+
+func Compute(args Args) Result {
 
 	workingDir, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
 
-	readFile, err := os.Open(workingDir + inputFile)
+	dayString := strconv.Itoa(args.Day)
+	if args.Day < 10 {
+		dayString = "0" + dayString
+	}
+
+	readFile, err := os.Open(fmt.Sprintf("%s/day-%s/%s", workingDir, dayString, args.InputFile))
 	if err != nil {
 		panic(err)
 	}
@@ -30,20 +77,13 @@ func Run(partOne func([]string) string, partTwo func([]string) string, inputFile
 	fileScanner := bufio.NewScanner(readFile)
 	fileScanner.Split(bufio.ScanLines)
 
-	// two lists so they can be modified by the solving functions
-	var listPartOne []string
-	var listPartTwo []string
+	var input []string
 
 	for fileScanner.Scan() {
-		line := fileScanner.Text()
-		// strings are immutable, this is fine
-		listPartOne = append(listPartOne, line)
-		listPartTwo = append(listPartTwo, line)
+		input = append(input, fileScanner.Text())
 	}
 
-	timePartOne, resultPartOne := timeIt(partOne, listPartOne)
-	timePartTwo, resultPartTwo := timeIt(partTwo, listPartTwo)
+	solution, duration := timeIt(args.Function, input)
 
-	fmt.Printf("| %-30s| %-10s|%30s |\n", inputFile+` - Part 1`, resultPartOne, timePartOne)
-	fmt.Printf("| %-30s| %-10s|%30s |\n", inputFile+` - Part 2`, resultPartTwo, timePartTwo)
+	return Result{solution, duration}
 }

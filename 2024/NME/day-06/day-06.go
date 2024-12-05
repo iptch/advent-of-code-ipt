@@ -1,4 +1,4 @@
-package dayXX
+package day06
 
 func PartOne(lines []string) string {
 	return "not_implemented"
