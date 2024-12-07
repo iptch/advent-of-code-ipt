@@ -7,11 +7,11 @@ def calc(part, numbers, test_value, value):
     if len(numbers) == 0:
         return value == test_value
     else:
-        sum = value + numbers[0]
         has_solution_sum = None
         has_solution_product = None
         has_solution_concat = None
 
+        sum = value + numbers[0]
         if sum <= test_value:
             has_solution_sum = calc(part, numbers[1:], test_value, sum)
 
