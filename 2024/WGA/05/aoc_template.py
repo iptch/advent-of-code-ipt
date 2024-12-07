@@ -34,7 +34,6 @@ def partition(rules, update, low, high):
 def quick_sort(rules, update, low, high):
     if low < high:
         pivot = partition(rules, update, low, high)
-
         quick_sort(rules, update, low, pivot-1)
         quick_sort(rules, update, pivot+1, high)
 
