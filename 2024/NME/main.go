@@ -8,6 +8,8 @@ import (
 	day04 "NME/day-04"
 	day05 "NME/day-05"
 	day06 "NME/day-06"
+	day07 "NME/day-07"
+	day08 "NME/day-08"
 	"fmt"
 	"sort"
 	"time"
@@ -15,8 +17,8 @@ import (
 
 func main() {
 	justSome := []commons.Args{
-		{day06.PartOne, 6, 1, "example.txt"},
-		{day06.PartTwo, 6, 2, "example.txt"},
+		{day08.PartOne, 8, 1, "input.txt"},
+		{day08.PartTwo, 8, 2, "input.txt"},
 	}
 
 	argsToRun := []commons.Args{
@@ -32,6 +34,10 @@ func main() {
 		{day05.PartTwo, 5, 2, "input.txt"},
 		{day06.PartOne, 6, 1, "input.txt"},
 		{day06.PartTwo, 6, 2, "input.txt"},
+		{day07.PartOne, 7, 1, "input.txt"},
+		{day07.PartTwo, 7, 2, "input.txt"},
+		{day08.PartOne, 8, 1, "input.txt"},
+		{day08.PartTwo, 8, 2, "input.txt"},
 	}
 
 	if len(justSome) != 0 {
@@ -58,4 +64,10 @@ func main() {
 			run.Result.Solution)
 	}
 	fmt.Println("| ------ | ------------------ | ------------------------------ |")
+
+	totalDuration := time.Duration(0)
+	for _, run := range runs {
+		totalDuration += run.Result.Duration
+	}
+	fmt.Println("Total Time:", commons.FormatWithApostrophe(time.Duration.Microseconds(totalDuration)), "μs")
 }
