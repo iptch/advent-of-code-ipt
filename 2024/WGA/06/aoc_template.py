@@ -2,77 +2,84 @@
 
 import pathlib
 import sys
-import sys
 import re
-import copy
 
 sys.setrecursionlimit(10000)
 
 REGEX = r"\^|>|v|<"
 
-def patrol(position, map):
-    direction = map[position[0]][position[1]]
+def rmv_duplicate_positions(route):
+    distict_positions = [route[0]]
 
-    position_up = (position[0]-1, position[1])
-    position_right = (position[0], position[1]+1)
-    position_down = (position[0]+1, position[1])
-    position_left = (position[0], position[1]-1)
+    for i in range(1, len(route)):
+        if (route[i][0], route[i][1]) in [(x[0], x[1]) for x in distict_positions]:
+            continue
+        else:
+            distict_positions.append(route[i])
 
-    if direction == "^":
-        if position_up[0] < 0:
+    return distict_positions
+
+def patrol(route, map):
+    position_u = (route[-1][0]-1, route[-1][1])
+    position_r = (route[-1][0], route[-1][1]+1)
+    position_d = (route[-1][0]+1, route[-1][1])
+    position_l = (route[-1][0], route[-1][1]-1)
+
+    if route[-1][2] == "^":
+        if position_u[0] < 0:
             return False
-        elif map[position_up[0]][position_up[1]] == "#":
-            map[position[0]][position[1]] = ">"
-            return patrol(position, map)
+        elif map[position_u[0]][position_u[1]] == "#":
+            route.append((route[-1][0], route[-1][1], ">"))
+            return patrol(route, map)
         else:
-            if map[position_up[0]][position_up[1]] == "^":
+            if (position_u[0], position_u[1], "^") in route:
                 return True
             else:
-                map[position_up[0]][position_up[1]] = "^"
-                return patrol(position_up, map)
-    elif direction == ">":
-        if position_right[1] > len(map[0])-1:
+                route.append((position_u[0], position_u[1], "^"))
+                return patrol(route, map)
+    elif route[-1][2] == ">":
+        if position_r[1] > len(map[0])-1:
             return False
-        elif map[position_right[0]][position_right[1]] == "#":
-            map[position[0]][position[1]] = "v"
-            return patrol(position, map)
+        elif map[position_r[0]][position_r[1]] == "#":
+            route.append((route[-1][0], route[-1][1], "v"))
+            return patrol(route, map)
         else:
-            if map[position_right[0]][position_right[1]] == ">":
+            if (position_r[0], position_r[1], ">") in route:
                 return True
             else:
-                map[position_right[0]][position_right[1]] = ">"
-                return patrol(position_right, map)
-    elif direction == "v":
-        if position_down[0] > len(map)-1:
+                route.append((position_r[0], position_r[1], ">"))
+                return patrol(route, map)
+    elif route[-1][2] == "v":
+        if position_d[0] > len(map)-1:
             return False
-        elif map[position_down[0]][position_down[1]] == "#":
-            map[position[0]][position[1]] = "<"
-            return patrol(position, map)
+        elif map[position_d[0]][position_d[1]] == "#":
+            route.append((route[-1][0], route[-1][1], "<"))
+            return patrol(route, map)
         else:
-            if map[position_down[0]][position_down[1]] == "v":
+            if (position_d[0], position_d[1], "v") in route:
                 return True
             else:
-                map[position_down[0]][position_down[1]] = "v"
-                return patrol(position_down, map)
+                route.append((position_d[0], position_d[1], "v"))
+                return patrol(route, map)
     else:
-        if position_left[1] < 0:
+        if position_l[1] < 0:
             return False
-        elif map[position_left[0]][position_left[1]] == "#":
-            map[position[0]][position[1]] = "^"
-            return patrol(position, map)
+        elif map[position_l[0]][position_l[1]] == "#":
+            route.append((route[-1][0], route[-1][1], "^"))
+            return patrol(route, map)
         else:
-            if map[position_left[0]][position_left[1]] == "<":
+            if (position_l[0], position_l[1], "<") in route:
                 return True
             else:
-                map[position_left[0]][position_left[1]] = "<"
-                return patrol(position_left, map)
+                route.append((position_l[0], position_l[1], "<"))
+                return patrol(route, map)
 
-def get_start_position(map):
+def find_start_position(map):
     for i in range(len(map)):
         res = re.search(REGEX, "".join(map[i]))
 
         if res:
-            return (i, res.start())
+            return (i, res.start(), map[i][res.start()])
 
     return None
 
@@ -82,18 +89,30 @@ def parse(puzzle_input):
 
 def part1(data):
     """Solve part 1."""
-    map = copy.deepcopy(data)
-    patrol(get_start_position(map), map)
+    route = [find_start_position(data)]
+    patrol(route, data)
+    distinct_positions = rmv_duplicate_positions(route)
 
-    sum = 0
-
-    for row in map:
-        sum += len(re.findall(REGEX, "".join(row)))
-
-    return sum
+    return len(distinct_positions)
 
 def part2(data):
     """Solve part 2."""
+    route = [find_start_position(data)]
+    patrol(route, data)
+    distinct_positions = rmv_duplicate_positions(route)
+
+    sum = 0
+
+    for i in range(1, len(distinct_positions)):
+        data[distinct_positions[i][0]][distinct_positions[i][1]] = "#"
+        has_loop = patrol([distinct_positions[0]], data)
+
+        if has_loop:
+            sum += 1
+
+        data[distinct_positions[i][0]][distinct_positions[i][1]] = "."
+
+    return sum
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

@@ -29,7 +29,10 @@ def calc(part, numbers, test_value, value):
 
 def parse(puzzle_input):
     """Parse input."""
-    return [[int(row.split(": ")[0]), [int(y) for y in row.split(": ")[1].split()]] for row in puzzle_input.splitlines()]
+    return [
+        [int(part[0]), [int(y) for y in part[1].split()]]
+        for part in (row.split(": ") for row in puzzle_input.splitlines())
+    ]
 
 def part1(data):
     """Solve part 1."""
