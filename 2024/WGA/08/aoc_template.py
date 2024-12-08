@@ -6,9 +6,6 @@ from string import ascii_letters
 
 DIGITS = "0123456789"
 
-def is_on_map(location, map_size):
-    return location[0] >= 0 and location[0] < map_size and location[1] >= 0 and location[1] < map_size
-
 def get_antinodes(puzzle_part, locations, map_size):
     antinodes = []
 
@@ -45,8 +42,8 @@ def part1(data):
     map_size = len(data["map"])
     antinodes = []
 
-    for letter in ascii_letters + DIGITS:
-        locations = [location for location in data["locations"] if location[2] == letter]
+    for frequency in ascii_letters + DIGITS:
+        locations = [location for location in data["locations"] if location[2] == frequency]
         antinodes += get_antinodes(1, locations, map_size)
 
     return len(list(dict.fromkeys(antinodes)))
@@ -56,8 +53,8 @@ def part2(data):
     map_size = len(data["map"])
     antinodes = []
 
-    for letter in ascii_letters + DIGITS:
-        locations = [location for location in data["locations"] if location[2] == letter]
+    for frequency in ascii_letters + DIGITS:
+        locations = [location for location in data["locations"] if location[2] == frequency]
         antinodes += get_antinodes(2, locations, map_size)
 
     return len(list(dict.fromkeys(antinodes)))
