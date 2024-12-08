@@ -3,7 +3,7 @@
 import pathlib
 import sys
 
-def calc(part, numbers, test_value, value):
+def calc(puzzle_part, numbers, test_value, value):
     if len(numbers) == 0:
         return value == test_value
     else:
@@ -13,16 +13,16 @@ def calc(part, numbers, test_value, value):
 
         sum = value + numbers[0]
         if sum <= test_value:
-            has_solution_sum = calc(part, numbers[1:], test_value, sum)
+            has_solution_sum = calc(puzzle_part, numbers[1:], test_value, sum)
 
         product = value * numbers[0]
         if product <= test_value:
-            has_solution_product = calc(part, numbers[1:], test_value, product)
+            has_solution_product = calc(puzzle_part, numbers[1:], test_value, product)
 
-        if part == 2:
+        if puzzle_part == 2:
             concat = int(str(value) + str(numbers[0]))
             if product <= test_value:
-                has_solution_concat = calc(part, numbers[1:], test_value, concat)
+                has_solution_concat = calc(puzzle_part, numbers[1:], test_value, concat)
 
         if has_solution_sum or has_solution_product or has_solution_concat:
             return True
