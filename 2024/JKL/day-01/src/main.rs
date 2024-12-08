@@ -7,16 +7,17 @@ struct Input(Vec<i32>, Vec<i32>);
 impl FromStr for Input {
     type Err = std::num::ParseIntError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let strings: (Vec<&str>, Vec<&str>) = s.lines()
-            .map(|l| l.split_whitespace())
-            .map(|mut w| (w.next().unwrap(), w.next().unwrap()))
+        let (left, right): (Vec<i32>, Vec<i32>) = s
+            .lines()
+            .map(|line| line.split_whitespace())
+            .map(|mut line| (line.next().unwrap(), line.next().unwrap()))
+            .map(|(l, r)| {
+                (
+                    l.parse::<i32>().expect(&format!("Could not parse '{}'", l)),
+                    r.parse::<i32>().expect(&format!("Could not parse '{}'", r)),
+                )
+            })
             .unzip();
-        let left: Vec<i32> = strings.0.into_iter()
-            .map(|l| l.parse().expect(&format!("Could not parse '{}'", l)))
-            .collect();
-        let right: Vec<i32> = strings.1.into_iter()
-            .map(|l| l.parse().expect(&format!("Could not parse '{}'", l)))
-            .collect();
         Ok(Input(left, right))
     }
 }
@@ -40,10 +41,14 @@ fn puzzle_1(mut input: Input) -> i32 {
 
 fn puzzle_2(input: Input) -> i32 {
     let mut map: HashMap<i32, i32> = HashMap::new();
-    input.1.into_iter().for_each(|x| {
+
+    for x in input.1 {
         map.entry(x).and_modify(|e| *e += 1).or_insert(1);
-    });
-    input.0.into_iter()
+    }
+
+    input
+        .0
+        .into_iter()
         .map(|x| *map.entry(x).or_insert(0) * x)
         .sum()
 }
