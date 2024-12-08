@@ -45,15 +45,11 @@ def part1(data):
 
     for letter in ascii_letters:
         locations = [location for location in data["locations"] if location[2] == letter]
-        
-        if len(locations) > 0:
-            antinodes += get_antinodes(1, locations, map_size)
+        antinodes += get_antinodes(1, locations, map_size)
 
     for digit in range(10):
         locations = [location for location in data["locations"] if location[2] == str(digit)]
-        
-        if len(locations) > 0:
-            antinodes += get_antinodes(1, locations, map_size)
+        antinodes += get_antinodes(1, locations, map_size)
 
     return len(list(dict.fromkeys(antinodes)))
 
@@ -64,15 +60,11 @@ def part2(data):
 
     for letter in ascii_letters:
         locations = [location for location in data["locations"] if location[2] == letter]
-        
-        if len(locations) > 0:
-            antinodes += get_antinodes(2, locations, map_size)
+        antinodes += get_antinodes(2, locations, map_size)
 
     for digit in range(10):
         locations = [location for location in data["locations"] if location[2] == str(digit)]
-        
-        if len(locations) > 0:
-            antinodes += get_antinodes(2, locations, map_size)
+        antinodes += get_antinodes(2, locations, map_size)
 
     return len(list(dict.fromkeys(antinodes)))
 
