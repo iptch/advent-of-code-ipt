@@ -54,7 +54,7 @@ fn puzzle_2(input: Input) -> i32 {
 }
 
 #[cfg(test)]
-mod test {
+mod test_day_01 {
     use crate::{puzzle_1, puzzle_2};
 
     static INPUT: &str = include_str!("../example.txt");

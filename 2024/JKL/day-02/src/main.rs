@@ -59,7 +59,7 @@ fn is_save_with_damper(report: &Vec<i32>) -> bool {
 }
 
 #[cfg(test)]
-mod test {
+mod test_day_02 {
     use crate::{puzzle_1, puzzle_2};
 
     static INPUT: &str = include_str!("../example.txt");

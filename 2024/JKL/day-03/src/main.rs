@@ -87,7 +87,7 @@ fn puzzle_2(input: Input) -> i32 {
 }
 
 #[cfg(test)]
-mod test {
+mod test_day_03 {
     use crate::{puzzle_1, puzzle_2};
 
     #[test]
