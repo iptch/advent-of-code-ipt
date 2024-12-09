@@ -18,8 +18,11 @@ impl FromStr for Input {
             .take_while(|l| !l.is_empty())
             .for_each(|line| {
                 let (before, after) = line.split_once("|").unwrap();
-                partial_order.insert((before.parse().unwrap(), after.parse().unwrap()), true);
-                partial_order.insert((after.parse().unwrap(), before.parse().unwrap()), false);
+                let (Ok(before), Ok(after)) = (before.parse::<i32>(), after.parse()) else {
+                    panic!("Invalid input");
+                };
+                partial_order.insert((before, after), true);
+                partial_order.insert((after, before), false);
             });
 
         let updates: Vec<Vec<i32>> = lines
