@@ -10,6 +10,7 @@ import (
 	day06 "NME/day-06"
 	day07 "NME/day-07"
 	day08 "NME/day-08"
+	day09 "NME/day-09"
 	"fmt"
 	"sort"
 	"time"
@@ -17,8 +18,8 @@ import (
 
 func main() {
 	justSome := []commons.Args{
-		{day08.PartOne, 8, 1, "input.txt"},
-		{day08.PartTwo, 8, 2, "input.txt"},
+		{day09.PartOne, 9, 1, "input.txt"},
+		{day09.PartTwo, 9, 2, "input.txt"},
 	}
 
 	argsToRun := []commons.Args{
@@ -38,6 +39,8 @@ func main() {
 		{day07.PartTwo, 7, 2, "input.txt"},
 		{day08.PartOne, 8, 1, "input.txt"},
 		{day08.PartTwo, 8, 2, "input.txt"},
+		{day09.PartOne, 9, 1, "input.txt"},
+		{day09.PartTwo, 9, 2, "input.txt"},
 	}
 
 	if len(justSome) != 0 {
