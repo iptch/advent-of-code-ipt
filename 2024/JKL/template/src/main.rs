@@ -1,11 +1,11 @@
 use std::str::FromStr;
 
-struct Input();
+struct Input {}
 
 impl FromStr for Input {
     type Err = std::num::ParseIntError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Ok(Input())
+        Ok(Input {})
     }
 }
 
@@ -17,7 +17,7 @@ fn main() {
     println!("The solution to part 2 is '{}'", answer);
 }
 
-fn puzzle_1(mut input: Input) -> i32 {
+fn puzzle_1(input: Input) -> i32 {
     todo!()
 }
 
