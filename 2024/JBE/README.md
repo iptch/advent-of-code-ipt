@@ -6,7 +6,7 @@ Run tests based on examples provided:
 cargo test
 ```
 
-Run a solution:
+In order to run a solution, copy your input under `./day-xx/input.txt` and run:
 
 ```sh
 cargo run --bin day-xx

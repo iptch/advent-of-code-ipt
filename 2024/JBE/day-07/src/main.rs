@@ -18,18 +18,14 @@ fn part_1(lines: &[Line]) -> usize {
     lines
         .iter()
         .filter(|e| e.test(&[Op::Mul, Op::Add]))
-        .map(|e| e.result)
-        .reduce(|acc, e| acc + e)
-        .unwrap_or_default()
+        .fold(0, |acc, e| acc + e.result)
 }
 
 fn part_2(lines: &[Line]) -> usize {
     lines
         .iter()
         .filter(|e| e.test(&[Op::Mul, Op::Add, Op::Concat]))
-        .map(|e| e.result)
-        .reduce(|acc, e| acc + e)
-        .unwrap_or_default()
+        .fold(0, |acc, e| acc + e.result)
 }
 
 fn parse(content: &str) -> Result<Vec<Line>> {
