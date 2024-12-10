@@ -6,10 +6,9 @@ import (
 )
 
 type Node struct {
-	Neighbors    [4]*Node
-	NumNeighbors int
-	Position     Coordinate
-	Value        int
+	Neighbors []*Node
+	Position  Coordinate
+	Value     int
 }
 
 type Coordinate struct {
@@ -52,8 +51,8 @@ func findRating(node *Node) int {
 			result++
 		}
 
-		for i := 0; i < currentNode.NumNeighbors; i++ {
-			queue.PushBack(currentNode.Neighbors[i])
+		for _, neighbor := range currentNode.Neighbors {
+			queue.PushBack(neighbor)
 		}
 	}
 	return result
@@ -74,8 +73,8 @@ func findNumSinks(node *Node) int {
 			sinks[currentNode.Position] = true
 		}
 
-		for i := 0; i < currentNode.NumNeighbors; i++ {
-			queue.PushBack(currentNode.Neighbors[i])
+		for _, neighbor := range currentNode.Neighbors {
+			queue.PushBack(neighbor)
 		}
 	}
 
@@ -90,10 +89,8 @@ func buildGraph(lines []string) map[int][]*Node {
 		for j, v := range line {
 			intValue, _ := strconv.Atoi(string(v))
 			blankNodes[i][j] = Node{
-				Neighbors:    [4]*Node{nil, nil, nil, nil},
-				NumNeighbors: 0,
-				Position:     Coordinate{i, j},
-				Value:        intValue,
+				Position: Coordinate{i, j},
+				Value:    intValue,
 			}
 			graph[intValue] = append(graph[intValue], &blankNodes[i][j])
 		}
@@ -111,9 +108,9 @@ func buildGraph(lines []string) map[int][]*Node {
 			for _, vector := range neighborVectors {
 				a, b := vector[0]+i, vector[1]+j
 				if a >= 0 && b >= 0 && a < len(blankNodes) && b < len(blankNodes) {
-					if node.Value+1 == blankNodes[a][b].Value {
-						node.Neighbors[node.NumNeighbors] = &blankNodes[a][b]
-						node.NumNeighbors += 1
+					neighbor := &blankNodes[a][b]
+					if node.Value+1 == neighbor.Value {
+						node.Neighbors = append(node.Neighbors, neighbor)
 					}
 				}
 			}
