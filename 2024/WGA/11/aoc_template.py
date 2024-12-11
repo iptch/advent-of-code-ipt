@@ -3,7 +3,7 @@
 import pathlib
 import sys
 
-def split(numbers):
+def blink(numbers):
     res = []
 
     for number in numbers:
@@ -29,7 +29,7 @@ def part1(data):
     numbers = data
 
     for _ in range(25):
-        numbers = split(numbers)
+        numbers = blink(numbers)
 
     return len(numbers)
 
