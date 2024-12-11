@@ -4,7 +4,7 @@ import pathlib
 import sys
 from string import ascii_letters
 
-DIGITS = "0123456789"
+FREQUENCIES = ascii_letters + "0123456789"
 
 def get_antinodes(puzzle_part, locations, map_size):
     antinodes = []
@@ -42,7 +42,7 @@ def part1(data):
     map_size = len(data["map"])
     antinodes = []
 
-    for frequency in ascii_letters + DIGITS:
+    for frequency in FREQUENCIES:
         locations = [location for location in data["locations"] if location[2] == frequency]
         antinodes += get_antinodes(1, locations, map_size)
 
@@ -53,7 +53,7 @@ def part2(data):
     map_size = len(data["map"])
     antinodes = []
 
-    for frequency in ascii_letters + DIGITS:
+    for frequency in FREQUENCIES:
         locations = [location for location in data["locations"] if location[2] == frequency]
         antinodes += get_antinodes(2, locations, map_size)
 
