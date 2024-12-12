@@ -3,22 +3,18 @@
 import pathlib
 import sys
 
-def blink(numbers):
-    res = []
-
-    for number in numbers:
-        string = str(number)
-        no_of_digits = len(string)
-
+def blink(number, iter):
+    if iter > 0:
+        s = str(number)
+        no_of_digits = len(s)
+        
         if number == 0:
-            res.append(1)
+            return blink(1, iter-1)
         elif no_of_digits % 2 == 0:
-            res.append(int(string[:no_of_digits//2]))
-            res.append(int(string[no_of_digits//2:]))
-        else:
-            res.append(number * 2024)
+            return blink(int(s[:no_of_digits//2]), iter-1) + blink(int(s[no_of_digits//2:]), iter-1)
+        return blink(number*2024, iter-1)
     
-    return res
+    return 1
 
 def parse(puzzle_input):
     """Parse input."""
@@ -26,15 +22,22 @@ def parse(puzzle_input):
 
 def part1(data):
     """Solve part 1."""
-    numbers = data
 
-    for _ in range(25):
-        numbers = blink(numbers)
+    sum = 0
 
-    return len(numbers)
+    for number in data:
+        sum += blink(number, 25)
+
+    return sum
 
 def part2(data):
     """Solve part 2."""
+    sum = 0
+
+    for number in data:
+        sum += blink(number, 75)
+
+    return sum
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

@@ -18,14 +18,14 @@ def compact_blocks(blocks):
     compacted_blocks = blocks.copy()
 
     for i in range(len(compacted_blocks)):
-        if compacted_blocks[i] == -1:
+        if compacted_blocks[i] == FREE_SPACE_ID:
             for j in range(len(compacted_blocks)-1, 0, -1):
-                if compacted_blocks[j] > -1:
+                if compacted_blocks[j] > FREE_SPACE_ID:
                     if j == i-1:
                         return compacted_blocks
                     else:
                         compacted_blocks[i] = compacted_blocks[j]
-                        compacted_blocks[j] = -1
+                        compacted_blocks[j] = FREE_SPACE_ID
                         break
 
     return None
@@ -34,13 +34,13 @@ def compact_files(files):
     compacted_files = files.copy()
 
     for i in range(len(compacted_files)-1, 0, -1):
-        if compacted_files[i][0] > -1:
+        if compacted_files[i][0] > FREE_SPACE_ID:
             for j in range(0, i):
-                if compacted_files[j][0] == -1 and compacted_files[j][1] >= compacted_files[i][1]:
-                    spare = compacted_files[j][1] - compacted_files[i][1]
+                if compacted_files[j][0] == FREE_SPACE_ID and compacted_files[j][1] >= compacted_files[i][1]:
+                    free_space = compacted_files[j][1] - compacted_files[i][1]
                     compacted_files[j] = (compacted_files[i][0], compacted_files[i][1])
-                    compacted_files[i] = (-1, compacted_files[i][1])
-                    compacted_files.insert(j+1, (-1, spare))
+                    compacted_files[i] = (FREE_SPACE_ID, compacted_files[i][1])
+                    compacted_files.insert(j+1, (FREE_SPACE_ID, free_space))
                     break
 
     return compacted_files
