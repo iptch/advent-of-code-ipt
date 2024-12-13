@@ -104,7 +104,7 @@ mod test_day_06 {
         assert_eq!(answer, 41);
     }
 
-    #[test]
+    // #[test]
     fn test_puzzle_2() {
         let answer = puzzle_2(INPUT.parse().unwrap());
         assert_eq!(answer, todo!());

@@ -4,7 +4,7 @@ struct Input {}
 
 impl FromStr for Input {
     type Err = std::num::ParseIntError;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(raw_input: &str) -> Result<Self, Self::Err> {
         Ok(Input {})
     }
 }
