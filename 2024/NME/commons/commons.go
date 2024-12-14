@@ -9,21 +9,28 @@ import (
 	"time"
 )
 
+type Problem interface {
+	PartOne(lines []string) string
+	PartTwo(lines []string) string
+}
+
 type Args struct {
-	Function  func([]string) string
-	Day       int
-	Part      int
-	InputFile string
+	Problem          Problem
+	InputFilePartOne string
+	InputFilePartTwo string
 }
 
 type Result struct {
-	Solution string
-	Duration time.Duration
+	Solution  string
+	Duration  time.Duration
+	InputFile string
+	Part      int
 }
 
 type Run struct {
-	Args   Args
-	Result Result
+	Args         Args
+	ResultDayOne Result
+	ResultDayTwo Result
 }
 
 func reverseString(s string) string {
@@ -57,24 +64,42 @@ func FormatWithApostrophe(n int64) string {
 	return reverseString(builder.String())
 }
 
-func Compute(args Args) Result {
+func Compute(args Args) Run {
+	inputPartOne := readLines(args.InputFilePartOne)
+	inputPartTwo := readLines(args.InputFilePartTwo)
 
+	solutionDayOne, durationDayOne := timeIt(args.Problem.PartOne, inputPartOne)
+	solutionDayTwo, durationDayTwo := timeIt(args.Problem.PartTwo, inputPartTwo)
+
+	return Run{
+		Args: args,
+		ResultDayOne: Result{
+			Solution:  solutionDayOne,
+			Duration:  durationDayOne,
+			InputFile: args.InputFilePartOne,
+			Part:      1,
+		},
+		ResultDayTwo: Result{
+			Solution:  solutionDayTwo,
+			Duration:  durationDayTwo,
+			InputFile: args.InputFilePartTwo,
+			Part:      2,
+		},
+	}
+}
+
+func readLines(inputFile string) []string {
 	workingDir, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
 
-	dayString := strconv.Itoa(args.Day)
-	if args.Day < 10 {
-		dayString = "0" + dayString
-	}
-
-	readFile, err := os.Open(fmt.Sprintf("%s/day-%s/%s", workingDir, dayString, args.InputFile))
+	file, err := os.Open(fmt.Sprintf("%s/solution/inputs/%s", workingDir, inputFile))
 	if err != nil {
 		panic(err)
 	}
 
-	fileScanner := bufio.NewScanner(readFile)
+	fileScanner := bufio.NewScanner(file)
 	fileScanner.Split(bufio.ScanLines)
 
 	var input []string
@@ -83,7 +108,5 @@ func Compute(args Args) Result {
 		input = append(input, fileScanner.Text())
 	}
 
-	solution, duration := timeIt(args.Function, input)
-
-	return Result{solution, duration}
+	return input
 }

@@ -2,18 +2,7 @@ package main
 
 import (
 	"NME/commons"
-	day01 "NME/day-01"
-	day02 "NME/day-02"
-	day03 "NME/day-03"
-	day04 "NME/day-04"
-	day05 "NME/day-05"
-	day06 "NME/day-06"
-	day07 "NME/day-07"
-	day08 "NME/day-08"
-	day09 "NME/day-09"
-	day10 "NME/day-10"
-	day11 "NME/day-11"
-	day12 "NME/day-12"
+	"NME/solution"
 	"fmt"
 	"sort"
 	"time"
@@ -21,65 +10,70 @@ import (
 
 func main() {
 	justSome := []commons.Args{
-		{day12.PartOne, 12, 1, "input.txt"},
-		{day12.PartTwo, 12, 2, "input.txt"},
+		//{Problem: solution.Day14{}, InputFilePartOne: "day-14/input.txt", InputFilePartTwo: "day-14/input.txt"},
 	}
 
 	argsToRun := []commons.Args{
-		{day01.PartOne, 1, 1, "input.txt"},
-		{day01.PartTwo, 1, 2, "input.txt"},
-		{day02.PartOne, 2, 1, "input.txt"},
-		{day02.PartTwo, 2, 2, "input.txt"},
-		{day03.PartOne, 3, 1, "input.txt"},
-		{day03.PartTwo, 3, 2, "input.txt"},
-		{day04.PartOne, 4, 1, "input.txt"},
-		{day04.PartTwo, 4, 2, "input.txt"},
-		{day05.PartOne, 5, 1, "input.txt"},
-		{day05.PartTwo, 5, 2, "input.txt"},
-		{day06.PartOne, 6, 1, "input.txt"},
-		{day06.PartTwo, 6, 2, "input.txt"},
-		{day07.PartOne, 7, 1, "input.txt"},
-		{day07.PartTwo, 7, 2, "input.txt"},
-		{day08.PartOne, 8, 1, "input.txt"},
-		{day08.PartTwo, 8, 2, "input.txt"},
-		{day09.PartOne, 9, 1, "input.txt"},
-		{day09.PartTwo, 9, 2, "input.txt"},
-		{day10.PartOne, 10, 1, "input.txt"},
-		{day10.PartTwo, 10, 2, "input.txt"},
-		{day11.PartOne, 11, 1, "input.txt"},
-		{day11.PartTwo, 11, 2, "input.txt"},
-		{day12.PartOne, 12, 1, "input.txt"},
-		{day12.PartTwo, 12, 2, "input.txt"},
+		{Problem: solution.Day01{}, InputFilePartOne: "day-01/input.txt", InputFilePartTwo: "day-01/input.txt"},
+		{Problem: solution.Day02{}, InputFilePartOne: "day-02/input.txt", InputFilePartTwo: "day-02/input.txt"},
+		{Problem: solution.Day03{}, InputFilePartOne: "day-03/input.txt", InputFilePartTwo: "day-03/input.txt"},
+		{Problem: solution.Day04{}, InputFilePartOne: "day-04/input.txt", InputFilePartTwo: "day-04/input.txt"},
+		{Problem: solution.Day05{}, InputFilePartOne: "day-05/input.txt", InputFilePartTwo: "day-05/input.txt"},
+		{Problem: solution.Day06{}, InputFilePartOne: "day-06/input.txt", InputFilePartTwo: "day-06/input.txt"},
+		{Problem: solution.Day07{}, InputFilePartOne: "day-07/input.txt", InputFilePartTwo: "day-07/input.txt"},
+		{Problem: solution.Day08{}, InputFilePartOne: "day-08/input.txt", InputFilePartTwo: "day-08/input.txt"},
+		{Problem: solution.Day09{}, InputFilePartOne: "day-09/input.txt", InputFilePartTwo: "day-09/input.txt"},
+		{Problem: solution.Day10{}, InputFilePartOne: "day-10/input.txt", InputFilePartTwo: "day-10/input.txt"},
+		{Problem: solution.Day11{}, InputFilePartOne: "day-11/input.txt", InputFilePartTwo: "day-11/input.txt"},
+		{Problem: solution.Day12{}, InputFilePartOne: "day-12/input.txt", InputFilePartTwo: "day-12/input.txt"},
+		{Problem: solution.Day13{}, InputFilePartOne: "day-13/input.txt", InputFilePartTwo: "day-13/input.txt"},
+		{Problem: solution.Day14{}, InputFilePartOne: "day-14/input.txt", InputFilePartTwo: "day-14/input.txt"},
+		{Problem: solution.Day15{}, InputFilePartOne: "day-15/input.txt", InputFilePartTwo: "day-15/input.txt"},
+		{Problem: solution.Day16{}, InputFilePartOne: "day-16/input.txt", InputFilePartTwo: "day-16/input.txt"},
+		{Problem: solution.Day17{}, InputFilePartOne: "day-17/input.txt", InputFilePartTwo: "day-17/input.txt"},
+		{Problem: solution.Day18{}, InputFilePartOne: "day-18/input.txt", InputFilePartTwo: "day-18/input.txt"},
+		{Problem: solution.Day19{}, InputFilePartOne: "day-19/input.txt", InputFilePartTwo: "day-19/input.txt"},
+		{Problem: solution.Day20{}, InputFilePartOne: "day-20/input.txt", InputFilePartTwo: "day-20/input.txt"},
+		{Problem: solution.Day21{}, InputFilePartOne: "day-21/input.txt", InputFilePartTwo: "day-21/input.txt"},
+		{Problem: solution.Day22{}, InputFilePartOne: "day-22/input.txt", InputFilePartTwo: "day-22/input.txt"},
+		{Problem: solution.Day23{}, InputFilePartOne: "day-23/input.txt", InputFilePartTwo: "day-23/input.txt"},
+		{Problem: solution.Day24{}, InputFilePartOne: "day-24/input.txt", InputFilePartTwo: "day-24/input.txt"},
+		{Problem: solution.Day25{}, InputFilePartOne: "day-25/input.txt", InputFilePartTwo: "day-25/input.txt"},
 	}
 
-	if len(justSome) != 0 {
+	if len(justSome) > 0 {
 		argsToRun = justSome
 	}
 
-	var runs []commons.Run
+	var results []commons.Result
 	for _, args := range argsToRun {
-		runs = append(runs, commons.Run{Args: args, Result: commons.Compute(args)})
+		run := commons.Compute(args)
+		results = append(results, run.ResultDayOne, run.ResultDayTwo)
 	}
 
-	sort.Slice(runs, func(i, j int) bool {
-		return runs[i].Result.Duration > runs[j].Result.Duration
+	sort.Slice(results, func(i, j int) bool {
+		if results[i].Duration == results[j].Duration {
+			return results[i].InputFile < results[j].InputFile
+		}
+		return results[i].Duration > results[j].Duration
 	})
 
-	fmt.Println("| ------ | ------------------ | ------------------------------ |")
-	fmt.Println("| Puzzle | Execution Duration | Solution                       |")
-	fmt.Println("| ------ | ------------------ | ------------------------------ |")
-	for _, run := range runs {
-		fmt.Printf("| %4d_%d | %15s μs | %30s |\n",
-			run.Args.Day,
-			run.Args.Part,
-			commons.FormatWithApostrophe(time.Duration.Microseconds(run.Result.Duration)),
-			run.Result.Solution)
+	fmt.Println("| ----------------------------- | ------------------ | ------------------------------ |")
+	fmt.Println("| Input                         | Execution Duration | Solution                       |")
+	fmt.Println("| ----------------------------- | ------------------ | ------------------------------ |")
+	for _, result := range results {
+		fmt.Printf("| Part %d - %-20s | %15s μs | %30s |\n",
+			result.Part,
+			result.InputFile,
+			commons.FormatWithApostrophe(time.Duration.Microseconds(result.Duration)),
+			result.Solution)
 	}
-	fmt.Println("| ------ | ------------------ | ------------------------------ |")
+	fmt.Println("| ----------------------------- | ------------------ | ------------------------------ |")
 
 	totalDuration := time.Duration(0)
-	for _, run := range runs {
-		totalDuration += run.Result.Duration
+	for _, result := range results {
+		totalDuration += result.Duration
 	}
 	fmt.Println("Total Time:", commons.FormatWithApostrophe(time.Duration.Microseconds(totalDuration)), "μs")
+
 }
