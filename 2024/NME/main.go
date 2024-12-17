@@ -10,7 +10,7 @@ import (
 
 func main() {
 	justSome := []commons.Args{
-		{Problem: solution.Day16{}, InputFilePartOne: "day-16/example.txt", InputFilePartTwo: "day-16/example.txt"},
+		{Problem: solution.Day17{}, InputFilePartOne: "day-17/input.txt", InputFilePartTwo: "day-17/input.txt"},
 	}
 
 	argsToRun := []commons.Args{

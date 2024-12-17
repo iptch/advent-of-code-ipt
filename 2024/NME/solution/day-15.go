@@ -6,7 +6,7 @@ import (
 )
 
 type Cell int
-type Instruction int
+type InstructionDirection int
 
 const (
 	Wall Cell = iota
@@ -15,7 +15,7 @@ const (
 )
 
 const (
-	UP Instruction = iota
+	UP InstructionDirection = iota
 	DOWN
 	LEFT
 	RIGHT
@@ -30,9 +30,9 @@ const (
 	WideBoxRight
 )
 
-func parseDay15(lines []string) ([][]Cell, []Instruction, Coordinate2D) {
+func parseDay15(lines []string) ([][]Cell, []InstructionDirection, Coordinate2D) {
 	var grid [][]Cell
-	var instructions []Instruction
+	var instructions []InstructionDirection
 	var robot Coordinate2D
 
 	parsingGrid := true
@@ -59,7 +59,7 @@ func parseDay15(lines []string) ([][]Cell, []Instruction, Coordinate2D) {
 			}
 		} else {
 			for _, char := range line {
-				var instruction Instruction
+				var instruction InstructionDirection
 				switch char {
 				case '^':
 					instruction = UP
@@ -77,9 +77,9 @@ func parseDay15(lines []string) ([][]Cell, []Instruction, Coordinate2D) {
 	return grid, instructions, robot
 }
 
-func parseDay15Part2(lines []string) ([][]WideCell, []Instruction, Coordinate2D) {
+func parseDay15Part2(lines []string) ([][]WideCell, []InstructionDirection, Coordinate2D) {
 	var grid [][]WideCell
-	var instructions []Instruction
+	var instructions []InstructionDirection
 	var robot Coordinate2D
 
 	parsingGrid := true
@@ -110,7 +110,7 @@ func parseDay15Part2(lines []string) ([][]WideCell, []Instruction, Coordinate2D)
 			}
 		} else {
 			for _, char := range line {
-				var instruction Instruction
+				var instruction InstructionDirection
 				switch char {
 				case '^':
 					instruction = UP
@@ -156,7 +156,7 @@ func (cell WideCell) toString() rune {
 	panic("unexpected cell")
 }
 
-func (instruction Instruction) next(current Coordinate2D) Coordinate2D {
+func (instruction InstructionDirection) next(current Coordinate2D) Coordinate2D {
 	switch instruction {
 	case UP:
 		return Coordinate2D{current.X, current.Y - 1}
@@ -175,7 +175,7 @@ func (cell Coordinate2D) outOfBounds(width int, height int) bool {
 	return cell.X < 0 || cell.Y < 0 || cell.X >= width || cell.Y >= height
 }
 
-func pushIfPossible(grid [][]Cell, robot Coordinate2D, instruction Instruction) Coordinate2D {
+func pushIfPossible(grid [][]Cell, robot Coordinate2D, instruction InstructionDirection) Coordinate2D {
 	next := instruction.next(robot)
 	for {
 		switch grid[next.Y][next.X] {
@@ -192,7 +192,7 @@ func pushIfPossible(grid [][]Cell, robot Coordinate2D, instruction Instruction) 
 	}
 }
 
-func oneStep(grid [][]Cell, instruction Instruction, robot Coordinate2D) Coordinate2D {
+func oneStep(grid [][]Cell, instruction InstructionDirection, robot Coordinate2D) Coordinate2D {
 	next := instruction.next(robot)
 
 	switch grid[next.Y][next.X] {
@@ -267,7 +267,7 @@ func (d Day15) PartOne(lines []string) string {
 	return strconv.Itoa(score(grid))
 }
 
-func canPush(grid [][]WideCell, instruction Instruction, cell Coordinate2D) bool {
+func canPush(grid [][]WideCell, instruction InstructionDirection, cell Coordinate2D) bool {
 	next := instruction.next(cell)
 	switch grid[next.Y][next.X] {
 	case WideWall:
@@ -291,7 +291,7 @@ func canPush(grid [][]WideCell, instruction Instruction, cell Coordinate2D) bool
 	panic("invalid next cell type")
 }
 
-func push(grid [][]WideCell, instruction Instruction, cell Coordinate2D) {
+func push(grid [][]WideCell, instruction InstructionDirection, cell Coordinate2D) {
 	next := instruction.next(cell)
 	switch grid[next.Y][next.X] {
 	case WideWall:
@@ -321,7 +321,7 @@ func push(grid [][]WideCell, instruction Instruction, cell Coordinate2D) {
 	}
 }
 
-func ontStepPart2(grid [][]WideCell, instruction Instruction, robot Coordinate2D) Coordinate2D {
+func ontStepPart2(grid [][]WideCell, instruction InstructionDirection, robot Coordinate2D) Coordinate2D {
 	next := instruction.next(robot)
 
 	switch grid[next.Y][next.X] {
