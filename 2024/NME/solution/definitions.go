@@ -29,3 +29,65 @@ type Day25 struct{}
 type Coordinate2D struct {
 	X, Y int
 }
+
+type Coordinate2DWithDistance struct {
+	Coordinates Coordinate2D
+	Distance    int
+}
+
+func (c Coordinate2D) OutOfBounds(width int, height int) bool {
+	return c.X < 0 || c.X >= width || c.Y < 0 || c.Y >= height
+}
+
+func (c Coordinate2D) Neighbors4() [4]Coordinate2D {
+	return [4]Coordinate2D{
+		{c.X + 1, c.Y},
+		{c.X - 1, c.Y},
+		{c.X, c.Y + 1},
+		{c.X, c.Y - 1},
+	}
+}
+
+// MinHeap /* ------------------------------------------ */
+
+// MinHeap is a type that implements heap.Interface
+type MinHeap []Coordinate2DWithDistance
+
+// Len returns the number of elements in the heap
+func (h MinHeap) Len() int {
+	return len(h)
+}
+
+// Less returns true if the element at index i is less than the element at index j
+func (h MinHeap) Less(i, j int) bool {
+	return h[i].Distance < h[j].Distance
+}
+
+// Swap swaps the elements at indices i and j
+func (h MinHeap) Swap(i, j int) {
+	h[i], h[j] = h[j], h[i]
+}
+
+// Push adds an element to the heap
+func (h *MinHeap) Push(x interface{}) {
+	*h = append(*h, x.(Coordinate2DWithDistance))
+}
+
+// Pop removes and returns the smallest element from the heap
+func (h *MinHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[:n-1]
+	return x
+}
+
+// Peek returns the smallest element without removing it
+func (h MinHeap) Peek() Coordinate2DWithDistance {
+	if len(h) == 0 {
+		panic("Heap is empty")
+	}
+	return h[0]
+}
+
+/* ------------------------------------------ */

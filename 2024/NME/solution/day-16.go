@@ -20,33 +20,33 @@ type Reindeer struct {
 	Scores    [][][]int
 }
 
-// MinHeap /* ------------------------------------------ */
+// MinReindeerHeap /* ------------------------------------------ */
 
-// MinHeap is a type that implements heap.Interface
-type MinHeap []Reindeer
+// MinReindeerHeap is a type that implements heap.Interface
+type MinReindeerHeap []Reindeer
 
 // Len returns the number of elements in the heap
-func (h MinHeap) Len() int {
+func (h MinReindeerHeap) Len() int {
 	return len(h)
 }
 
 // Less returns true if the element at index i is less than the element at index j
-func (h MinHeap) Less(i, j int) bool {
+func (h MinReindeerHeap) Less(i, j int) bool {
 	return h[i].score() < h[j].score()
 }
 
 // Swap swaps the elements at indices i and j
-func (h MinHeap) Swap(i, j int) {
+func (h MinReindeerHeap) Swap(i, j int) {
 	h[i], h[j] = h[j], h[i]
 }
 
 // Push adds an element to the heap
-func (h *MinHeap) Push(x interface{}) {
+func (h *MinReindeerHeap) Push(x interface{}) {
 	*h = append(*h, x.(Reindeer))
 }
 
 // Pop removes and returns the smallest element from the heap
-func (h *MinHeap) Pop() interface{} {
+func (h *MinReindeerHeap) Pop() interface{} {
 	old := *h
 	n := len(old)
 	x := old[n-1]
@@ -55,7 +55,7 @@ func (h *MinHeap) Pop() interface{} {
 }
 
 // Peek returns the smallest element without removing it
-func (h MinHeap) Peek() Reindeer {
+func (h MinReindeerHeap) Peek() Reindeer {
 	if len(h) == 0 {
 		panic("Heap is empty")
 	}
@@ -192,7 +192,7 @@ func printScores(scores [][][]int, maze [][]MazeCell) {
 
 func walkToEnd(maze [][]MazeCell, reindeer Reindeer, end Coordinate2D) int {
 
-	queue := &MinHeap{}
+	queue := &MinReindeerHeap{}
 	heap.Init(queue)
 	reindeer.setScore(0)
 	queue.Push(reindeer)
@@ -251,7 +251,7 @@ func printVisitedCells(visitedCells map[Coordinate2D]bool, maze [][]MazeCell) {
 }
 
 func walkBack(maze [][]MazeCell, reindeer Reindeer, end Coordinate2D) int {
-	queue := &MinHeap{}
+	queue := &MinReindeerHeap{}
 	heap.Init(queue)
 
 	bestReindeer := Reindeer{end.X, end.Y, Up, reindeer.Scores}
@@ -282,7 +282,7 @@ func walkBack(maze [][]MazeCell, reindeer Reindeer, end Coordinate2D) int {
 			queue.Push(turn2)
 		}
 	}
-	
+
 	return len(visitedCells)
 }
 
