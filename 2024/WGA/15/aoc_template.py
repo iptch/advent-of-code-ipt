@@ -2,11 +2,19 @@
 
 import pathlib
 import sys
+import copy
 
 sys.setrecursionlimit(25000)
 
-def get_gps(x, y):
-    return 100 * x + y
+def get_gps(map):
+    sum = 0
+
+    for x in range(len(map)):
+        for y in range(len(map[x])):
+            if map[x][y] in ["O", "["]:
+                sum += 100 * x + y
+
+    return sum
 
 def move(x, y, map, movements):
     if len(movements) == 0:
@@ -67,7 +75,13 @@ def parse(puzzle_input):
     """Parse input."""
     map, movements = puzzle_input.split("\n\n")
     map = [list(row) for row in map.splitlines()]
-    
+
+    return [map, movements.replace("\n","")]
+
+def part1(data):
+    """Solve part 1."""
+    map = copy.deepcopy(data[0])
+    movements = data[1]
     x_start = y_start = None
 
     for x in range(len(map)):
@@ -77,24 +91,35 @@ def parse(puzzle_input):
                 y_start = y
                 break
 
-    return [x_start, y_start, map, movements.replace("\n","")]
-
-def part1(data):
-    """Solve part 1."""
-    x_start, y_start, map, movements = data
-    sum = 0
-    
     move(x_start, y_start, map, movements)
 
-    for x in range(len(map)):
-        for y in range(len(map[x])):
-            if map[x][y] == "O":
-                sum += get_gps(x, y)
+    for row in map:
+        print("".join(row))
 
-    return sum
+    return get_gps(map)
 
 def part2(data):
     """Solve part 2."""
+    map = copy.deepcopy(data[0])
+    movements = data[1]
+    x_start = y_start = None
+
+    for x in range(len(map)):
+        map[x] = list("".join(map[x]).replace("#", "##").replace("O", "[]").replace(".", "..").replace("@", "@."))
+
+    for x in range(len(map)):
+        for y in range(len(map[0])):
+            if map[x][y] == "@":
+                x_start = x
+                y_start = y
+                break
+
+    move(x_start, y_start, map, movements)
+
+    for row in map:
+        print("".join(row))
+
+    return get_gps(map)
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
