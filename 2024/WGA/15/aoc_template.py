@@ -9,9 +9,9 @@ sys.setrecursionlimit(25000)
 def get_gps(map):
     sum = 0
 
-    for x in range(len(map)):
-        for y in range(len(map[x])):
-            if map[x][y] in ["O", "["]:
+    for x, row in enumerate(map):
+        for y, cell in enumerate(row):
+            if cell in ["O", "["]:
                 sum += 100 * x + y
 
     return sum
@@ -76,7 +76,7 @@ def parse(puzzle_input):
     map, movements = puzzle_input.split("\n\n")
     map = [list(row) for row in map.splitlines()]
 
-    return [map, movements.replace("\n","")]
+    return (map, movements.replace("\n",""))
 
 def part1(data):
     """Solve part 1."""
@@ -84,9 +84,9 @@ def part1(data):
     movements = data[1]
     x_start = y_start = None
 
-    for x in range(len(map)):
-        for y in range(len(map[0])):
-            if map[x][y] == "@":
+    for x, row in enumerate(map):
+        for y, cell in enumerate(row):
+            if cell == "@":
                 x_start = x
                 y_start = y
                 break
@@ -107,9 +107,9 @@ def part2(data):
     for x in range(len(map)):
         map[x] = list("".join(map[x]).replace("#", "##").replace("O", "[]").replace(".", "..").replace("@", "@."))
 
-    for x in range(len(map)):
-        for y in range(len(map[0])):
-            if map[x][y] == "@":
+    for x, row in enumerate(map):
+        for y, cell in enumerate(row):
+            if cell == "@":
                 x_start = x
                 y_start = y
                 break
