@@ -14,7 +14,6 @@ def blink(number, iter):
             return blink(1, iter-1)
         elif no_of_digits % 2 == 0:
             half = 10 ** (no_of_digits // 2)
-
             return blink(number // half, iter-1) + blink(number % half, iter-1)
         
         return blink(number*2024, iter-1)

@@ -16,9 +16,9 @@ def parse(puzzle_input):
 
     for machine in puzzle_input.split("\n\n"):
         lines = machine.splitlines()
-        button_a = [int(i) for i in re.findall(r"\d+", lines[0])]
-        button_b = [int(i) for i in re.findall(r"\d+", lines[1])]
-        prize = [int(i) for i in re.findall(r"\d+", lines[2])]
+        button_a = list(map(int, re.findall(r"\d+", lines[0])))
+        button_b = list(map(int, re.findall(r"\d+", lines[1])))
+        prize = list(map(int, re.findall(r"\d+", lines[2])))
 
         machines.append((
             (button_a[0], button_a[1]),
@@ -34,9 +34,12 @@ def part1(data):
     
     for machine in data:
         button_a, button_b, prize = machine
+        button_a_x, button_a_y = button_a
+        button_b_x, button_b_y = button_b
+        prize_x, prize_y = prize
 
-        a = (button_b[1] * prize[0] - prize[1] * button_b[0]) / (button_b[1] * button_a[0] - button_a[1] * button_b[0])
-        b = (prize[1] - a * button_a[1]) / button_b[1]
+        a = (button_b_y * prize_x - prize_y * button_b_x) / (button_b_y * button_a_x - button_a_y * button_b_x)
+        b = (prize_y - a * button_a_y) / button_b_y
 
         if int(a) == a and a <= LIMIT and int(b) == b and b <= LIMIT:
             sum += int(get_tokens(a, b))
@@ -49,10 +52,12 @@ def part2(data):
     
     for machine in data:
         button_a, button_b, prize = machine
-        prize = (prize[0] + OFFSET, prize[1] + OFFSET)
+        button_a_x, button_a_y = button_a
+        button_b_x, button_b_y = button_b
+        prize_x, prize_y = (prize[0] + OFFSET, prize[1] + OFFSET)
 
-        a = (button_b[1] * prize[0] - prize[1] * button_b[0]) / (button_b[1] * button_a[0] - button_a[1] * button_b[0])
-        b = (prize[1] - a * button_a[1]) / button_b[1]
+        a = (button_b_y * prize_x - prize_y * button_b_x) / (button_b_y * button_a_x - button_a_y * button_b_x)
+        b = (prize_y - a * button_a_y) / button_b_y
 
         if int(a) == a and int(b) == b:
             sum += int(get_tokens(a, b))
