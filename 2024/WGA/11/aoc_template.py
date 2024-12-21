@@ -2,7 +2,9 @@
 
 import pathlib
 import sys
+from functools import lru_cache
 
+@lru_cache(None)
 def blink(number, iter):
     if iter > 0:
         s = str(number)
@@ -11,33 +13,27 @@ def blink(number, iter):
         if number == 0:
             return blink(1, iter-1)
         elif no_of_digits % 2 == 0:
-            return blink(int(s[:no_of_digits//2]), iter-1) + blink(int(s[no_of_digits//2:]), iter-1)
+            half = 10 ** (no_of_digits // 2)
+
+            return blink(number // half, iter-1) + blink(number % half, iter-1)
+        
         return blink(number*2024, iter-1)
     
     return 1
 
 def parse(puzzle_input):
     """Parse input."""
-    return [int(numbers) for numbers in puzzle_input.split()]
+    return list(map(int, puzzle_input.split()))
 
 def part1(data):
     """Solve part 1."""
 
-    sum = 0
-
-    for number in data:
-        sum += blink(number, 25)
-
-    return sum
+    return sum(blink(number, 25) for number in data)
 
 def part2(data):
     """Solve part 2."""
-    sum = 0
 
-    for number in data:
-        sum += blink(number, 75)
-
-    return sum
+    return sum(blink(number, 75) for number in data)
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
