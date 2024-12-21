@@ -3,44 +3,28 @@
 import pathlib
 import sys
 
-def get_areas_perimeters(prev_plant, i, j, map, local_path, global_path):
-    plant = map[i][j]
+DIRECTIONS = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+
+def get_areas_perimeters(prev_plant, x, y, map, path, visited):
+    plant = map[x][y]
     
-    if (i, j) not in local_path:
+    if (x, y) not in path:
         if plant == prev_plant:
-            local_path.append((i, j))
-            global_path.append((i, j))
+            path.append((x, y))
+            visited[x][y] = True
 
             areas = 1
             perimeters = 0
 
-            if i-1 >= 0:
-                res = get_areas_perimeters(plant, i-1, j, map, local_path, global_path)
-                areas += res[0]
-                perimeters += res[1]
-            else:
-                perimeters += 1
-            
-            if i+1 < len(map):
-                res = get_areas_perimeters(plant, i+1, j, map, local_path, global_path)
-                areas += res[0]
-                perimeters += res[1]
-            else:
-                perimeters += 1
+            for dx, dy in DIRECTIONS:
+                nx, ny = x + dx, y + dy
 
-            if j-1 >= 0:
-                res = get_areas_perimeters(plant, i, j-1, map, local_path, global_path)
-                areas += res[0]
-                perimeters += res[1]
-            else:
-                perimeters += 1
-
-            if j+1 < len(map[i]):
-                res = get_areas_perimeters(plant, i, j+1, map, local_path, global_path)
-                areas += res[0]
-                perimeters += res[1]
-            else:
-                perimeters += 1
+                if 0 <= nx < len(map) and 0 <= ny < len(map[nx]):
+                    res = get_areas_perimeters(plant, nx, ny, map, path, visited)
+                    areas += res[0]
+                    perimeters += res[1]
+                else:
+                    perimeters += 1
             
             return (areas, perimeters)
 
@@ -55,14 +39,13 @@ def parse(puzzle_input):
 def part1(data):
     """Solve part 1."""
     sum = 0
+    visited = [[False] * len(row) for row in data]
 
-    global_path = []
-
-    for i in range(len(data)):
-        for j in range(len(data[i])):
-            if (i, j) not in global_path:
-                local_path = []
-                areas_perimeters = get_areas_perimeters(data[i][j], i, j, data, local_path, global_path)
+    for x, row in enumerate(data):
+        for y, cell in enumerate(row):
+            if not visited[x][y]:
+                path = []
+                areas_perimeters = get_areas_perimeters(cell, x, y, data, path, visited)
                 sum += areas_perimeters[0] * areas_perimeters[1]
 
     return sum
