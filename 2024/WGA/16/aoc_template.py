@@ -36,28 +36,28 @@ def dijkstra(start, end, maze):
 
 def parse(puzzle_input):
     """Parse input."""
-    s = e = None
+    start = end = None
     map = [list(row) for row in puzzle_input.splitlines()]
 
     for x, row in enumerate(map):
         for y, cell in enumerate(row):
             if cell == "S":
-                s = (x, y)
+                start = (x, y)
             elif cell == "E":
-                e = (x, y)
-            elif s is not None and e is not None:
+                end = (x, y)
+            elif start is not None and end is not None:
                 break
 
-    return (s, e, [list(row) for row in puzzle_input.splitlines()])
+    return (start, end, [list(row) for row in puzzle_input.splitlines()])
 
 def part1(data):
     """Solve part 1."""
-    s, e, map = data
+    start, end, map = data
 
     for row in map:
         print("".join(row))
 
-    return dijkstra(s, e, map)
+    return dijkstra(start, end, map)
 
 def part2(data):
     """Solve part 2."""

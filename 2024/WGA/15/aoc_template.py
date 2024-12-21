@@ -104,8 +104,8 @@ def part2(data):
     movements = data[1]
     x_start = y_start = None
 
-    for x in range(len(map)):
-        map[x] = list("".join(map[x]).replace("#", "##").replace("O", "[]").replace(".", "..").replace("@", "@."))
+    for x, row in enumerate(map):
+        map[x] = list("".join(row).replace("#", "##").replace("O", "[]").replace(".", "..").replace("@", "@."))
 
     for x, row in enumerate(map):
         for y, cell in enumerate(row):
