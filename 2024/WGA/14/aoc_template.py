@@ -4,45 +4,75 @@ import pathlib
 import sys
 import re
 
-def simulate(x, y, dx, dy, x_limit, y_limit, t):
-    if t < 100:
-        new_x = x + dx
-        new_y = y + dy
+sys.setrecursionlimit(20000)
 
-        if new_x < 0:
-            new_x += x_limit
-        elif new_x >= x_limit:
-            new_x -= x_limit
-
-        if new_y < 0:
-            new_y += y_limit
-        elif new_y >= y_limit:
-            new_y -= y_limit
-
-        return simulate(new_x, new_y, dx, dy, x_limit, y_limit, t+1)
-
-    return (x, y)
-
-def parse(puzzle_input):
-    """Parse input."""
-    return [[int(i) for i in re.findall(r"-?\d+", row)] for row in puzzle_input.splitlines()]
-
-def part1(data):
-    """Solve part 1."""
-    x_limit = max([row[0] for row in data]) + 1
-    y_limit = max([row[1] for row in data]) + 1
-
-    end_positions = [simulate(row[0], row[1], row[2], row[3], x_limit, y_limit, 0) for row in data]
-
-    safety_factor = len([i for i in end_positions if i[0] < x_limit/2-1 and i[1] < y_limit/2-1])
-    safety_factor *= len([i for i in end_positions if i[0] > x_limit/2 and i[1] < y_limit/2-1])
-    safety_factor *= len([i for i in end_positions if i[0] < x_limit/2-1 and i[1] > y_limit/2])
-    safety_factor *= len([i for i in end_positions if i[0] > x_limit/2 and i[1] > y_limit/2])
+def get_safety_factor(robots, x_limit, y_limit):
+    safety_factor = len([x for x, y, _, _ in robots if x < x_limit/2-1 and y < y_limit/2-1])
+    safety_factor *= len([x for x, y, _, _ in robots if x > x_limit/2 and y < y_limit/2-1])
+    safety_factor *= len([x for x, y, _, _ in robots if x < x_limit/2-1 and y > y_limit/2])
+    safety_factor *= len([x for x, y, _, _ in robots if x > x_limit/2 and y > y_limit/2])
 
     return safety_factor
 
+def get_simulations(robots, x_limit, y_limit, t_limit):
+    simulations = [None] * (t_limit+1)
+    simulations[0] = (get_safety_factor(robots, x_limit, y_limit), robots)
+
+    for i in range(1, len(simulations)):
+        new_robots = []
+
+        for robot in simulations[i-1][1]:
+            x, y, dx, dy = robot
+            nx = x + dx
+            ny = y + dy
+
+            if nx < 0:
+                nx += x_limit
+            elif nx >= x_limit:
+                nx -= x_limit
+
+            if ny < 0:
+                ny += y_limit
+            elif ny >= y_limit:
+                ny -= y_limit
+
+            new_robots.append((nx, ny, dx, dy))
+
+        simulations[i] = (get_safety_factor(new_robots, x_limit, y_limit), new_robots)
+
+    return simulations
+
+def parse(puzzle_input):
+    """Parse input."""
+    return [tuple(map(int, re.findall(r"-?\d+", row))) for row in puzzle_input.splitlines()]
+
+def part1(data):
+    """Solve part 1."""
+    x_limit = max([x for x, _, _, _ in data]) + 1
+    y_limit = max([y for _, y, _, _ in data]) + 1
+    t_limit = 100
+
+    return get_simulations(data, x_limit, y_limit, t_limit)[-1][0]
+
 def part2(data):
     """Solve part 2."""
+    x_limit = max([x for x, _, _, _ in data]) + 1
+    y_limit = max([y for _, y, _, _ in data]) + 1
+    t_limit = 10000
+
+    simulations = get_simulations(data, x_limit, y_limit, t_limit)
+    safety_factors = [simulation[0] for simulation in simulations]
+    t_max = safety_factors.index(max(safety_factors))
+
+    map = [["."] * x_limit for _ in range(y_limit)]
+    
+    for x, y, _, _ in simulations[t_max][1]:
+        map[y][x] = "@"
+
+    for row in map:
+        print("".join(row))
+
+    return t_max
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
