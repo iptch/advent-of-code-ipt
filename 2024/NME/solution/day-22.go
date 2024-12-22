@@ -5,15 +5,15 @@ import (
 )
 
 const (
-	modulo       = 16777216
+	mask         = 0xFFFFFF
 	iterations   = 2000
 	sequenceSize = 4
 )
 
 func customHash(seed int) int {
-	seed = seed ^ (seed<<6)%modulo
-	seed = seed ^ (seed>>5)%modulo
-	seed = seed ^ (seed<<11)%modulo
+	seed = (seed ^ (seed << 6)) & mask
+	seed = (seed ^ (seed >> 5)) & mask
+	seed = (seed ^ (seed << 11)) & mask
 	return seed
 }
 
