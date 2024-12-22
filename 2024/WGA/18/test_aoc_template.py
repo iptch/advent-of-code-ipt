@@ -23,7 +23,7 @@ def example3():
 
 def test_part1_example1(example1):
     """Test part 1 on example input."""
-    assert aoc.part1(example1) == "4,6,3,5,6,3,5,2,1,0"
+    assert aoc.part1(example1) == 22
 
 @pytest.mark.skip(reason="Not implemented")
 def test_part1_example2(example2):
@@ -35,14 +35,14 @@ def test_part1_example3(example3):
     """Test part 1 on example input."""
     assert aoc.part1(example3) == ...
 
-@pytest.mark.skip(reason="Not implemented")
 def test_part2_example1(example1):
     """Test part 2 on example input."""
-    assert aoc.part2(example1) == ...
+    assert aoc.part2(example1) == "6,1"
 
+@pytest.mark.skip(reason="Not implemented")
 def test_part2_example2(example2):
     """Test part 2 on example input."""
-    assert aoc.part2(example2) == 117440
+    assert aoc.part2(example2) == ...
 
 @pytest.mark.skip(reason="Not implemented")
 def test_part2_example3(example3):
