@@ -4,11 +4,11 @@ import pathlib
 import sys
 import heapq
 
-DIRECTIONS = ['^', '>', 'v', '<']
-MOVES = {'^': (-1, 0), '>': (0, 1), 'v': (1, 0), '<': (0, -1)}
+DIRECTIONS = ["^", ">", "v", "<"]
+MOVES = {"^": (-1, 0), ">": (0, 1), "v": (1, 0), "<": (0, -1)}
 
 def dijkstra(start, end, map):
-    pq = [(0, start[0], start[1], '>')]
+    pq = [(0, start[0], start[1], ">")]
     visited = set()
 
     while pq:
@@ -25,7 +25,7 @@ def dijkstra(start, end, map):
         dx, dy = MOVES[dir]
         nx, ny = x + dx, y + dy
 
-        if map[nx][ny] != '#':
+        if map[nx][ny] != "#":
             heapq.heappush(pq, (cost+1, nx, ny, dir))
 
         for new_dir in [DIRECTIONS[(DIRECTIONS.index(dir) + 1) % 4],

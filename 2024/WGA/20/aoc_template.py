@@ -12,6 +12,7 @@ def dijkstra(start, end, map):
 
     while pq:
         cost, x, y = heapq.heappop(pq)
+        
         if (x, y) == end:
             return cost
 
