@@ -1,6 +1,7 @@
+use std::collections::HashSet;
 use std::fs;
 
-use std::collections::HashSet;
+use itertools::Itertools;
 
 type Result<T> = ::std::result::Result<T, Box<dyn ::std::error::Error>>;
 
@@ -69,13 +70,15 @@ fn contained(grid: &Grid, pos: &(usize, usize)) -> bool {
     x < grid.len() && y < grid[x].len()
 }
 
+fn positions(grid: &Grid) -> impl Iterator<Item = (usize, usize)> {
+    (0..grid.len()).cartesian_product(0..grid[0].len())
+}
+
 fn find_starting_positions(grid: &Grid) -> HashSet<(usize, usize)> {
     let mut res = HashSet::new();
-    for x in 0..grid.len() {
-        for y in 0..grid[x].len() {
-            if grid[x][y] == 0 {
-                res.insert((x, y));
-            }
+    for position in positions(grid) {
+        if grid[position.0][position.1] == 0 {
+            res.insert(position);
         }
     }
     res
