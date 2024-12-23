@@ -47,9 +47,6 @@ def part1(data):
             x, y = byte
             map[y][x] = "#"
 
-    for row in map:
-        print("".join(row))
-
     return dijkstra((0, 0), (y_limit-1, x_limit-1), map)
 
 def part2(data):
