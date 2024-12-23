@@ -12,65 +12,17 @@ type RunePath struct {
 }
 
 type AtoAPath struct {
-	v, w, x, y, z rune
-	depth         int
+	path   [5]rune
+	length int
+	depth  int
 }
 
 func (a AtoAPath) print() {
-	if a.v == EmptyRune {
-		fmt.Printf("A")
-	} else if a.w == EmptyRune {
-		fmt.Printf("%cA", a.v)
-	} else if a.x == EmptyRune {
-		fmt.Printf("%c%cA", a.v, a.w)
-	} else if a.y == EmptyRune {
-		fmt.Printf("%c%c%cA", a.v, a.w, a.x)
-	} else if a.z == EmptyRune {
-		fmt.Printf("%c%c%c%cA", a.v, a.w, a.x, a.y)
-	} else {
-		fmt.Printf("%c%c%c%c%cA", a.v, a.w, a.x, a.y, a.z)
+	for i := 0; i < a.length; i++ {
+		fmt.Printf("%c", a.path[i])
 	}
+	fmt.Printf("A")
 }
-
-func (a AtoAPath) toRunes() []rune {
-	var p []rune
-
-	if a.v == EmptyRune {
-		p = []rune{'A', 'A'}
-	} else if a.w == EmptyRune {
-		p = []rune{'A', a.v, 'A'}
-	} else if a.x == EmptyRune {
-		p = []rune{'A', a.v, a.w, 'A'}
-	} else if a.y == EmptyRune {
-		p = []rune{'A', a.v, a.w, a.x, 'A'}
-	} else if a.z == EmptyRune {
-		p = []rune{'A', a.v, a.w, a.x, a.y, 'A'}
-	} else {
-		p = []rune{'A', a.v, a.w, a.x, a.y, a.z, 'A'}
-	}
-
-	return p
-}
-
-func (a AtoAPath) score() int {
-	if a.v == EmptyRune {
-		return 1
-	} else if a.w == EmptyRune {
-		return 2
-	} else if a.x == EmptyRune {
-		return 3
-	} else if a.y == EmptyRune {
-		return 4
-	} else if a.z == EmptyRune {
-		return 5
-	} else {
-		return 6
-	}
-}
-
-const (
-	EmptyRune = 'E'
-)
 
 /*
 	+---+---+---+
@@ -113,44 +65,43 @@ var PositionToRune = map[Coordinate2D]rune{
 }
 
 /*
-	+---+---+
-	| ^ | A |
-
-+---+---+---+
-| < | v | > |
-+---+---+---+
+		+---+---+
+		| ^ | A |
+	+---+---+---+
+	| < | v | > |
+	+---+---+---+
 */
 
 var bestExpansion = map[RunePath][]rune{
-	{'A', 'A'}: {'A'},
-	{'A', '^'}: {'<', 'A'},
-	{'A', '>'}: {'v', 'A'},
-	{'A', 'v'}: {'<', 'v', 'A'},
-	{'A', '<'}: {'v', '<', '<', 'A'},
+	{'A', 'A'}: {},
+	{'A', '^'}: {'<'},
+	{'A', '>'}: {'v'},
+	{'A', 'v'}: {'<', 'v'},
+	{'A', '<'}: {'v', '<', '<'},
 
-	{'^', '^'}: {'A'},
-	{'^', 'A'}: {'>', 'A'},
-	{'^', '>'}: {'v', '>', 'A'},
-	{'^', 'v'}: {'v', 'A'},
-	{'^', '<'}: {'v', '<', 'A'},
+	{'^', '^'}: {},
+	{'^', 'A'}: {'>'},
+	{'^', '>'}: {'v', '>'},
+	{'^', 'v'}: {'v'},
+	{'^', '<'}: {'v', '<'},
 
-	{'>', '>'}: {'A'},
-	{'>', 'A'}: {'^', 'A'},
-	{'>', 'v'}: {'<', 'A'},
-	{'>', '<'}: {'<', '<', 'A'},
-	{'>', '^'}: {'<', '^', 'A'},
+	{'>', '>'}: {},
+	{'>', 'A'}: {'^'},
+	{'>', 'v'}: {'<'},
+	{'>', '<'}: {'<', '<'},
+	{'>', '^'}: {'<', '^'},
 
-	{'<', '<'}: {'A'},
-	{'<', 'A'}: {'>', '>', '^', 'A'},
-	{'<', '>'}: {'>', '>', 'A'},
-	{'<', 'v'}: {'>', 'A'},
-	{'<', '^'}: {'>', '^', 'A'},
+	{'<', '<'}: {},
+	{'<', 'A'}: {'>', '>', '^'},
+	{'<', '>'}: {'>', '>'},
+	{'<', 'v'}: {'>'},
+	{'<', '^'}: {'>', '^'},
 
-	{'v', 'v'}: {'A'},
-	{'v', 'A'}: {'^', '>', 'A'},
-	{'v', '>'}: {'>', 'A'},
-	{'v', '<'}: {'<', 'A'},
-	{'v', '^'}: {'^', 'A'},
+	{'v', 'v'}: {},
+	{'v', 'A'}: {'^', '>'},
+	{'v', '>'}: {'>'},
+	{'v', '<'}: {'<'},
+	{'v', '^'}: {'^'},
 }
 
 var CACHE = make(map[RunePath][][]rune)
@@ -252,77 +203,80 @@ func codeScore(code string) int {
 	return i
 }
 
-func expandOnce(path AtoAPath) []rune {
-	p := path.toRunes()
+func (a AtoAPath) toSlice() []rune {
+	result := make([]rune, a.length+1)
+	for i := range a.length {
+		result[i] = a.path[i]
+	}
+	result[a.length] = 'A'
+	return result
+}
 
-	var expansion []rune
+func (a AtoAPath) expandOnce() []AtoAPath {
+	var expansions []AtoAPath
 	previous := 'A'
-	for _, current := range p {
-		expansion = append(expansion, bestExpansion[RunePath{previous, current}]...)
+	for _, current := range a.toSlice() {
+		expansion := bestExpansion[RunePath{previous, current}]
+		var fixedLengthPath [5]rune
+		for i := 0; i < len(expansion); i++ {
+			fixedLengthPath[i] = expansion[i]
+		}
+		expansions = append(expansions, AtoAPath{fixedLengthPath, len(expansion), a.depth - 1})
 		previous = current
 	}
 
-	return expansion
+	return expansions
 }
 
-func splitIntoAtoAChunk(path []rune, depth int) []AtoAPath {
+func (a AtoAPath) expandPathMemo() int {
+	_, exists := cache[a]
+	if exists == false {
+		cache[a] = a.expandPath()
+	}
+	return cache[a]
+}
+
+func (a AtoAPath) expandPath() int {
+	if a.depth == 0 {
+		return a.length + 1
+	}
+
+	result := 0
+	for _, aToaChunk := range a.expandOnce() {
+		result += aToaChunk.expandPathMemo()
+	}
+	return result
+}
+
+func splitIntoAtoAChunk(fullPath []rune) []AtoAPath {
 	var result []AtoAPath
-	v, w, x, y, z := EmptyRune, EmptyRune, EmptyRune, EmptyRune, EmptyRune
-	for _, char := range path[1:] {
+	currentLength := 0
+	for i, char := range fullPath {
 		if char == 'A' {
-			result = append(result, AtoAPath{v, w, x, y, z, depth})
-			v, w, x, y, z = EmptyRune, EmptyRune, EmptyRune, EmptyRune, EmptyRune
-		} else {
-			if v == EmptyRune {
-				v = char
-			} else if w == EmptyRune {
-				w = char
-			} else if x == EmptyRune {
-				x = char
-			} else if y == EmptyRune {
-				y = char
-			} else if z == EmptyRune {
-				z = char
+			var fixedLengthPath [5]rune
+			for j := 0; j < currentLength; j++ {
+				fixedLengthPath[j] = fullPath[i-currentLength+j]
 			}
+			result = append(result, AtoAPath{path: fixedLengthPath, length: currentLength})
+			currentLength = 0
+		} else {
+			currentLength++
 		}
 	}
 
 	return result
 }
 
-func expandPath(path AtoAPath) int {
-	val, exists := cache[path]
-	if exists {
-		return val
-	}
-
-	if path.depth == 0 {
-		return path.score()
-	}
-
-	expansion := expandOnce(path)
-	aToaChunks := splitIntoAtoAChunk(expansion, path.depth)
-
-	result := 0
-	for _, aToaChunk := range aToaChunks {
-		aToaChunk.depth = aToaChunk.depth - 1
-		result += expandPath(aToaChunk)
-	}
-
-	cache[path] = result
-	return result
-}
-
-func computeShortestSequenceBetter(line string, depth int) int {
-	currentIteration := expandNumericKeypad(line)
+func shortestSequence(line string, depth int) int {
+	numericExpansion := expandNumericKeypad(line)
 
 	best := math.MaxInt
-	for i := range currentIteration {
+	for i := range numericExpansion {
 		currentScore := 0
-		lineToExpand := append([]rune{'A'}, currentIteration[i]...)
-		a2aChunks := splitIntoAtoAChunk(lineToExpand, depth)
+		a2aChunks := splitIntoAtoAChunk(numericExpansion[i])
 		for _, a2aChunk := range a2aChunks {
-			currentScore += expandPath(a2aChunk)
+			a2aChunk.depth = depth
+			currentScore += a2aChunk.expandPath()
 		}
 		best = min(best, currentScore)
 	}
@@ -330,24 +284,18 @@ func computeShortestSequenceBetter(line string, depth int) int {
 	return best
 }
 
-func (d Day21) PartOne(lines []string) string {
+func solve(lines []string, depth int) int {
 	result := 0
-
 	for _, line := range lines {
-		shortestSequence := computeShortestSequenceBetter(line, 2)
-		result += codeScore(line) * shortestSequence
+		result += codeScore(line) * shortestSequence(line, depth)
 	}
+	return result
+}
 
-	return strconv.Itoa(result)
+func (d Day21) PartOne(lines []string) string {
+	return strconv.Itoa(solve(lines, 2))
 }
 
 func (d Day21) PartTwo(lines []string) string {
-	result := 0
-
-	for _, line := range lines {
-		shortestSequence := computeShortestSequenceBetter(line, 25)
-		result += codeScore(line) * shortestSequence
-	}
-
-	return strconv.Itoa(result)
+	return strconv.Itoa(solve(lines, 25))
 }
