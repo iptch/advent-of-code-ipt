@@ -23,7 +23,7 @@ fn part_1(grid: &Vec<Vec<char>>) -> usize {
     for i in 0..input.len() - XMAS_WINDOW_SIZE + 1 {
         for j in 0..input[i].len() - XMAS_WINDOW_SIZE + 1 {
             let window = get_window_at(&input, &(i, j), XMAS_WINDOW_SIZE);
-            count = count + count_xmas_in_window(&window);
+            count += count_xmas_in_window(&window);
         }
     }
     count
@@ -35,7 +35,7 @@ fn part_2(grid: &Vec<Vec<char>>) -> usize {
         for j in 0..grid[i].len() - MAS_WINDOW_SIZE + 1 {
             let window = get_window_at(&grid, &(i, j), MAS_WINDOW_SIZE);
             if is_mas_in_window(&window) {
-                count = count + 1;
+                count += 1;
             }
         }
     }

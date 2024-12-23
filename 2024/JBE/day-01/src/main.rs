@@ -37,7 +37,7 @@ fn part_2(lines: &[Line]) -> u32 {
     for line in lines {
         first.push(line.first);
         if let Some(x) = second.get_mut(&line.second) {
-            *x = *x + 1;
+            *x += 1;
         } else {
             second.insert(&line.second, 1);
         }

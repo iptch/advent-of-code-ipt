@@ -32,7 +32,7 @@ fn part_2(input: &Vec<Vec<Cell>>, guard: &(usize, usize)) -> usize {
                 new_grid.inner[i][j] = Cell::Obstacle;
                 while new_grid.move_guard() {
                     if new_grid.is_in_loop() {
-                        count = count + 1;
+                        count += 1;
                         break;
                     }
                 }
