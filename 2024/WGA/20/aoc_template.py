@@ -4,33 +4,28 @@ import pathlib
 import sys
 import heapq
 
-DIRECTIONS = ['^', '>', 'v', '<']
-MOVES = {'^': (-1, 0), '>': (0, 1), 'v': (1, 0), '<': (0, -1)}
+DIRECTIONS = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
 def dijkstra(start, end, map):
-    pq = [(0, start[0], start[1], '>')]
+    pq = [(0, start[0], start[1])]
     visited = set()
 
     while pq:
-        cost, x, y, dir = heapq.heappop(pq)
-
+        cost, x, y = heapq.heappop(pq)
         if (x, y) == end:
             return cost
 
-        if (x, y, dir) in visited:
+        if (x, y) in visited:
             continue
         
-        visited.add((x, y, dir))
+        visited.add((x, y))
 
-        dx, dy = MOVES[dir]
-        nx, ny = x + dx, y + dy
+        for dir in DIRECTIONS:
+            dx, dy = dir
+            nx, ny = x + dx, y + dy
 
-        if map[nx][ny] != '#':
-            heapq.heappush(pq, (cost+1, nx, ny, dir))
-
-        for new_dir in [DIRECTIONS[(DIRECTIONS.index(dir) + 1) % 4],
-                        DIRECTIONS[(DIRECTIONS.index(dir) - 1) % 4]]:
-            heapq.heappush(pq, (cost+1000, x, y, new_dir))
+            if ny >= 0 and ny < len(map) and nx >= 0 and nx < len(map[nx]) and map[nx][ny] != '#':
+                heapq.heappush(pq, (cost+1, nx, ny))
 
     return
 
@@ -54,10 +49,27 @@ def part1(data):
     """Solve part 1."""
     start, end, map = data
 
-    return dijkstra(start, end, map)
+    t = dijkstra(start, end, map)
+    cheats = []
+
+    for x, row in enumerate(map):
+        for y, cell in enumerate(row):
+            if x > 0 and x < len(map)-1 and y > 0 and y < len(row)-1 and cell == "#":
+                if [row[y] for row in map[x-1:x+2]] != "###" or map[x][y-1:y+2] != "###":
+                    map[x][y] = "."
+                    cheats.append(t - dijkstra(start, end, map))
+                    map[x][y] = "#"
+
+    return len([cheat for cheat in cheats if cheat >= (2 if len(map) == 15 else 100)])
 
 def part2(data):
     """Solve part 2."""
+    start, end, map = data
+
+    t = dijkstra(start, end, map)
+    cheats = []
+
+    return len([cheat for cheat in cheats if cheat >= (50 if len(map) == 15 else 100)])
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
