@@ -30,27 +30,63 @@ def get_moves_dict(keypad):
     return moves_dict
 
 def dijkstra(start, end, map):
-    pq = [(0, "", start[0], start[1])]
+    pq = [(0, start[0], start[1], "")]
     visited = set()
 
     while pq:
-        cost, seq, x, y = heapq.heappop(pq)
+        cost, x, y, seq = heapq.heappop(pq)
 
         if (x, y) == end:
             return seq + "A"
 
-        if (x, y) in visited:
+        if (x, y, seq) in visited:
             continue
         
-        visited.add((x, y))
+        visited.add((x, y, seq))
 
-        for dir in DIRECTIONS:
-            dx, dy = DIRECTIONS[dir]
+        for new_dir in DIRECTIONS:
+            dx, dy = DIRECTIONS[new_dir]
             nx, ny = x + dx, y + dy
 
             if nx >= 0 and nx < len(map) and ny >= 0 and ny < len(map[nx]) and map[nx][ny] != ' ':
-                heapq.heappush(pq, (cost+1, seq+dir, nx, ny))
+                new_cost = cost + 1
+                dir = "" if seq == "" else seq[-1]
+
+                # Get sequences with the least direction changes
+                if dir != new_dir:
+                    new_cost += 1
+                    
+                    # Get sequences with button furthest away from A in front when moving diagonally
+                    if new_dir == "<" and dir in ["v", "^"] or new_dir == "v" and dir == ">":
+                        new_cost += 1
+
+                heapq.heappush(pq, (new_cost, nx, ny, seq+new_dir))
     return
+
+def get_sequence(code, n):
+    numpad_moves_dict = get_moves_dict(NUMPAD)
+    dirpad_moves_dict = get_moves_dict(DIRPAD)
+
+    sequence = ""
+
+    for i, num in enumerate(code):
+        if i == 0:
+            sequence += numpad_moves_dict["A"][num]
+        else:
+            sequence += numpad_moves_dict[code[i-1]][num]
+
+    for _ in range(n):
+        tmp = ""
+
+        for i, dir in enumerate(sequence):
+            if i == 0:
+                tmp += dirpad_moves_dict["A"][dir]
+            else:
+                tmp += dirpad_moves_dict[sequence[i-1]][dir]
+
+        sequence = tmp
+
+    return sequence
 
 def parse(puzzle_input):
     """Parse input."""
@@ -59,39 +95,23 @@ def parse(puzzle_input):
 
 def part1(data):
     """Solve part 1."""
-    numpad_moves_dict = get_moves_dict(NUMPAD)
-    dirpad_moves_dict = get_moves_dict(DIRPAD)
     complexity = 0
 
     for code in data:
-        dir_seq_1 = ""
-        dir_seq_2 = ""
-        dir_seq_3 = ""
-
-        for i in range(len(code)):
-            if i == 0:
-                dir_seq_1 += numpad_moves_dict["A"][code[i]]
-            else:
-                dir_seq_1 += numpad_moves_dict[code[i-1]][code[i]]
-
-        for i in range(len(dir_seq_1)):
-            if i == 0:
-                dir_seq_2 += dirpad_moves_dict["A"][dir_seq_1[i]]
-            else:
-                dir_seq_2 += dirpad_moves_dict[dir_seq_1[i-1]][dir_seq_1[i]]
-
-        for i in range(len(dir_seq_2)):
-            if i == 0:
-                dir_seq_3 += dirpad_moves_dict["A"][dir_seq_2[i]]
-            else:
-                dir_seq_3 += dirpad_moves_dict[dir_seq_2[i-1]][dir_seq_2[i]]
-
-        complexity += len(dir_seq_3) * int(code[:-1])
+        sequence = get_sequence(code, 2)
+        complexity += len(sequence) * int(code[:-1])
 
     return complexity
 
 def part2(data):
     """Solve part 2."""
+    complexity = 0
+
+    for code in data:
+        sequence = get_sequence(code, 2)
+        complexity += len(sequence) * int(code[:-1])
+
+    return complexity
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
