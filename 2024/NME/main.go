@@ -10,7 +10,7 @@ import (
 
 func main() {
 	justSome := []commons.Args{
-		{Problem: solution.Day22{}, InputFilePartOne: "day-22/input.txt", InputFilePartTwo: "day-22/input.txt"},
+		{Problem: solution.Day24{}, InputFilePartOne: "day-24/input.txt", InputFilePartTwo: "day-24/input.txt"},
 	}
 
 	argsToRun := []commons.Args{
@@ -58,17 +58,17 @@ func main() {
 		return results[i].Duration > results[j].Duration
 	})
 
-	fmt.Println("| ----------------------------- | ------------------ | ------------------------------ |")
-	fmt.Println("| Input                         | Execution Duration | Solution                       |")
-	fmt.Println("| ----------------------------- | ------------------ | ------------------------------ |")
+	fmt.Println("| ----------------------------- | ------------------ | ---------------------------------------- |")
+	fmt.Println("| Input                         | Execution Duration | Solution                                 |")
+	fmt.Println("| ----------------------------- | ------------------ | ---------------------------------------- |")
 	for _, result := range results {
-		fmt.Printf("| Part %d - %-20s | %15s μs | %30s |\n",
+		fmt.Printf("| Part %d - %-20s | %15s μs | %40s |\n",
 			result.Part,
 			result.InputFile,
 			commons.FormatWithApostrophe(time.Duration.Microseconds(result.Duration)),
 			result.Solution)
 	}
-	fmt.Println("| ----------------------------- | ------------------ | ------------------------------ |")
+	fmt.Println("| ----------------------------- | ------------------ | ---------------------------------------- |")
 
 	totalDuration := time.Duration(0)
 	for _, result := range results {
