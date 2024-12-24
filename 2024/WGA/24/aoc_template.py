@@ -4,6 +4,14 @@ import pathlib
 import sys
 import re
 
+def simulate(gate, input1, input2):
+    if gate == "AND":
+        return input1 and input2
+    elif gate == "OR":
+        return input1 or input2
+    
+    return input1 != input2
+
 def parse(puzzle_input):
     """Parse input."""
     values = {}
@@ -24,13 +32,7 @@ def part1(data):
     while counter > 0:
         for gate, input1, input2, output in gates:
             if output not in values and input1 in values and input2 in values:
-                if gate == "AND":
-                    values[output] = values[input1] and values[input2]
-                elif gate == "OR":
-                    values[output] = values[input1] or values[input2]
-                else:
-                    values[output] = values[input1] != values[input2]
-
+                values[output] = simulate(gate, values[input1], values[input2])
                 counter -= 1
 
     output = "".join(["1" if values[x] else "0" for x in sorted(values, reverse=True) if x[0] == "z"])
