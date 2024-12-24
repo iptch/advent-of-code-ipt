@@ -62,17 +62,17 @@ def part2(data):
 
     simulations = get_simulations(data, x_limit, y_limit, t_limit)
     safety_factors = [simulation[0] for simulation in simulations]
-    t_max = safety_factors.index(max(safety_factors))
+    t_min = safety_factors.index(min(safety_factors))
 
     map = [["."] * x_limit for _ in range(y_limit)]
     
-    for x, y, _, _ in simulations[t_max][1]:
+    for x, y, _, _ in simulations[t_min][1]:
         map[y][x] = "@"
 
     for row in map:
         print("".join(row))
 
-    return t_max
+    return t_min
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
