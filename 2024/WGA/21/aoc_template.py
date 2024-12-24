@@ -10,7 +10,7 @@ DIRPAD = [" ^A", "<v>"]
 DIRECTIONS = {"^": (-1, 0), ">": (0, 1), "v": (1, 0), "<": (0, -1)}
 
 def get_buttons(keypad):
-    graph = defaultdict(tuple)
+    graph = {}
 
     for x, row in enumerate(keypad):
         for y, cell in enumerate(row):

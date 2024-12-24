@@ -3,11 +3,10 @@
 import pathlib
 import sys
 import re
-from collections import defaultdict
 
 def parse(puzzle_input):
     """Parse input."""
-    values = defaultdict(bool)
+    values = {}
     initial_values, gates = puzzle_input.split("\n\n")
 
     for initial_value in initial_values.splitlines():
