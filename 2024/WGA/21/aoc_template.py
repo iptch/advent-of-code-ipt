@@ -4,7 +4,7 @@ import pathlib
 import sys
 from functools import lru_cache
 
-NUM_DICT = {
+NUM = {
     "7": {'7': 'A', '8': '>A', '9': '>>A', '4': 'vA', '5': 'v>A', '6': 'v>>A', '1': 'vvA', '2': 'vv>A', '3': 'vv>>A', '0': '>vvvA', 'A': '>>vvvA'},
     "8": {'7': '<A', '8': 'A', '9': '>A', '4': '<vA', '5': 'vA', '6': 'v>A', '1': '<vvA', '2': 'vvA', '3': 'vv>A', '0': 'vvvA', 'A': 'vvv>A'},
     "9": {'7': '<<A', '8': '<A', '9': 'A', '4': '<<vA', '5': '<vA', '6': 'vA', '1': '<<vvA', '2': '<vvA', '3': 'vvA', '0': '<vvvA', 'A': 'vvvA'},
@@ -18,7 +18,7 @@ NUM_DICT = {
     "A": {'7': '^^^<<A', '8': '<^^^A', '9': '^^^A', '4': '^^<<A', '5': '<^^A', '6': '^^A', '1': '^<<A', '2': '<^A', '3': '^A', '0': '<A', 'A': 'A'}
 }
 
-DIR_DICT = {
+DIR = {
     "^": {"^": "A", "A": ">A", "<": "v<A", "v": "vA", ">": "v>A"},
     "A": {"^": "<A", "A": "A", "<": "v<<A", "v": "<vA", ">": "vA"},
     "<": {"^": ">^A", "A": ">>^A", "<": "A", "v": ">A", ">": ">>A"},
@@ -27,19 +27,19 @@ DIR_DICT = {
 }
 
 @lru_cache(None)
-def get_seq(seq, n):
+def length(seq, n):
     if n > 0:
-        new_seq = ""
-
+        min_len = 0
+        
         for i, dir in enumerate(seq):
             if i == 0:
-                new_seq += get_seq(DIR_DICT["A"][dir], n-1)
+                min_len += length(DIR["A"][dir], n-1)
             else:
-                new_seq += get_seq(DIR_DICT[seq[i-1]][dir], n-1)
+                min_len += length(DIR[seq[i-1]][dir], n-1)
 
-        return new_seq
+        return min_len
 
-    return seq
+    return len(seq)
 
 def parse(puzzle_input):
     """Parse input."""
@@ -51,16 +51,8 @@ def part1(data):
     complexity = 0
 
     for code in data:
-        seq = ""
-
-        for i, num in enumerate(code):
-            if i == 0:
-                seq += NUM_DICT["A"][num]
-            else:
-                seq += NUM_DICT[code[i-1]][num]
-
-        seq = get_seq(seq, 2)
-        complexity += len(seq) * int(code[:-1])
+        sequences = [NUM["A"][num] if i == 0 else NUM[code[i-1]][num] for i, num in enumerate(code)]
+        complexity += length("".join(sequences), 2) * int(code[:-1])
 
     return complexity
 
@@ -69,17 +61,10 @@ def part2(data):
     complexity = 0
 
     for code in data:
-        seq = ""
+        sequences = [NUM["A"][num] if i == 0 else NUM[code[i-1]][num] for i, num in enumerate(code)]
+        complexity += length("".join(sequences), 25) * int(code[:-1])
 
-        for i, num in enumerate(code):
-            if i == 0:
-                seq += NUM_DICT["A"][num]
-            else:
-                seq += NUM_DICT[code[i-1]][num]
-
-        seq = get_seq(seq, 25)
-        complexity += len(seq) * int(code[:-1])
-
+    # Works on example input, but not on puzzle input
     return complexity
 
 def solve(puzzle_input):
