@@ -105,13 +105,6 @@ def part1(data):
 
 def part2(data):
     """Solve part 2."""
-    complexity = 0
-
-    for code in data:
-        sequence = get_sequence(code, 2)
-        complexity += len(sequence) * int(code[:-1])
-
-    return complexity
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
