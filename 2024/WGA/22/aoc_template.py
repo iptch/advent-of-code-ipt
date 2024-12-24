@@ -45,24 +45,17 @@ def part2(data):
     for i, init_number in enumerate(data):
         prices = [secret_number % 10 for secret_number in get_secret_numbers(init_number, 2000)]
         changes = [",".join([str(n - m) for m, n in zip(prices[j-4:j], prices[j-3:j+1])]) for j in range(len(prices)) if j > 3]
-        buyers[i] = zip(prices[4:], changes)
-
+        buyers[i] = list(zip(prices[4:], changes)
+)
     for buyer in buyers:
-        max_prices = {}
+        seen_sequences = []
 
         for price, seq in buyer:
-            if seq not in max_prices or price > max_prices[seq]:
-                max_prices[seq] = price
-
-        for seq in max_prices:
-            if seq in bananas:
-                bananas[seq] += max_prices[seq]
+            if seq in seen_sequences:
+                continue
             else:
-                bananas[seq] = max_prices[seq]
-
-    # Works on example input, but not on puzzle input
-    max_seq = max(bananas, key=bananas.get)
-    print(max_seq)
+                bananas[seq] = bananas[seq] + price if seq in bananas else price
+                seen_sequences.append(seq)
 
     return max(bananas.values())
 
