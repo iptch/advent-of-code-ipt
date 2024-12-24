@@ -3,6 +3,20 @@
 import pathlib
 import sys
 import re
+from functools import lru_cache
+
+@lru_cache(None)
+def get_arrangements(design, patterns):
+    if design == "":
+        return 1
+    
+    arrangements = 0
+
+    for pattern in patterns:
+        if design.startswith(pattern):
+            arrangements += get_arrangements(design[len(pattern):], patterns)
+
+    return arrangements
 
 def reduce_patterns(patterns):
     reduced_patterns = []
@@ -18,7 +32,7 @@ def reduce_patterns(patterns):
 def parse(puzzle_input):
     """Parse input."""
     patterns, designs = puzzle_input.split("\n\n")
-    patterns = patterns.split(", ")
+    patterns = tuple(patterns.split(", "))
     designs = designs.splitlines()
 
     return (patterns, designs)
@@ -32,6 +46,9 @@ def part1(data):
 
 def part2(data):
     """Solve part 2."""
+    patterns, designs = data
+
+    return sum(get_arrangements(design, patterns) for design in designs)
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

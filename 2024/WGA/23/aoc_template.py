@@ -5,7 +5,7 @@ import sys
 import re
 from collections import defaultdict
 
-def get_sets_of_3(graph):
+def get_sets(graph):
     sets = []
 
     for computer1 in graph:
@@ -30,7 +30,7 @@ def part1(data):
         graph[computer1].add(computer2)
         graph[computer2].add(computer1)
 
-    sets = get_sets_of_3(graph)
+    sets = get_sets(graph)
     sets_with_t = [set for set in sets if re.search("t[a-z]", set) != None]
 
     return len(sets_with_t)
