@@ -2,91 +2,44 @@
 
 import pathlib
 import sys
-import heapq
-from collections import defaultdict
+from functools import lru_cache
 
-NUMPAD = ["789", "456", "123", " 0A"]
-DIRPAD = [" ^A", "<v>"]
-DIRECTIONS = {"^": (-1, 0), ">": (0, 1), "v": (1, 0), "<": (0, -1)}
+NUM_DICT = {
+    "7": {'7': 'A', '8': '>A', '9': '>>A', '4': 'vA', '5': 'v>A', '6': 'v>>A', '1': 'vvA', '2': 'vv>A', '3': 'vv>>A', '0': '>vvvA', 'A': '>>vvvA'},
+    "8": {'7': '<A', '8': 'A', '9': '>A', '4': '<vA', '5': 'vA', '6': 'v>A', '1': '<vvA', '2': 'vvA', '3': 'vv>A', '0': 'vvvA', 'A': 'vvv>A'},
+    "9": {'7': '<<A', '8': '<A', '9': 'A', '4': '<<vA', '5': '<vA', '6': 'vA', '1': '<<vvA', '2': '<vvA', '3': 'vvA', '0': '<vvvA', 'A': 'vvvA'},
+    "4": {'7': '^A', '8': '>^A', '9': '>>^A', '4': 'A', '5': '>A', '6': '>>A', '1': 'vA', '2': 'v>A', '3': 'v>>A', '0': '>vvA', 'A': '>>vvA'},
+    "5": {'7': '<^A', '8': '^A', '9': '>^A', '4': '<A', '5': 'A', '6': '>A', '1': '<vA', '2': 'vA', '3': 'v>A', '0': 'vvA', 'A': 'vv>A'},
+    "6": {'7': '<<^A', '8': '<^A', '9': '^A', '4': '<<A', '5': '<A', '6': 'A', '1': '<<vA', '2': '<vA', '3': 'vA', '0': '<vvA', 'A': 'vvA'},
+    "1": {'7': '^^A', '8': '>^^A', '9': '>>^^A', '4': '^A', '5': '>^A', '6': '>>^A', '1': 'A', '2': '>A', '3': '>>A', '0': '>vA', 'A': '>>vA'},
+    "2": {'7': '<^^A', '8': '^^A', '9': '>^^A', '4': '<^A', '5': '^A', '6': '>^A', '1': '<A', '2': 'A', '3': '>A', '0': 'vA', 'A': 'v>A'},
+    "3": {'7': '<<^^A', '8': '<^^A', '9': '^^A', '4': '<<^A', '5': '<^A', '6': '^A', '1': '<<A', '2': '<A', '3': 'A', '0': '<vA', 'A': 'vA'},
+    "0": {'7': '^^^<A', '8': '^^^A', '9': '>^^^A', '4': '^^<A', '5': '^^A', '6': '>^^A', '1': '^<A', '2': '^A', '3': '>^A', '0': 'A', 'A': '>A'},
+    "A": {'7': '^^^<<A', '8': '<^^^A', '9': '^^^A', '4': '^^<<A', '5': '<^^A', '6': '^^A', '1': '^<<A', '2': '<^A', '3': '^A', '0': '<A', 'A': 'A'}
+}
 
-def get_buttons(keypad):
-    graph = {}
+DIR_DICT = {
+    "^": {"^": "A", "A": ">A", "<": "v<A", "v": "vA", ">": "v>A"},
+    "A": {"^": "<A", "A": "A", "<": "v<<A", "v": "<vA", ">": "vA"},
+    "<": {"^": ">^A", "A": ">>^A", "<": "A", "v": ">A", ">": ">>A"},
+    "v": {"^": "^A", "A": ">^A", "<": "<A", "v": "A", ">": ">A"},
+    ">": {"^": "<^A", "A": "^A", "<": "<<A", "v": "<A", ">": "A"}
+}
 
-    for x, row in enumerate(keypad):
-        for y, cell in enumerate(row):
-            graph[cell] = (x, y)
+@lru_cache(None)
+def get_seq(seq, n):
+    if n > 0:
+        new_seq = ""
 
-    return graph
-
-def get_moves_dict(keypad):
-    moves_dict = defaultdict(dict)
-    buttons = get_buttons(keypad)
-
-    for i in buttons:
-        for j in buttons:
-            if i != " " and j != " ":
-                moves_dict[i][j] = dijkstra(buttons[i], buttons[j], keypad)
-
-    return moves_dict
-
-def dijkstra(start, end, map):
-    pq = [(0, start[0], start[1], "")]
-    visited = set()
-
-    while pq:
-        cost, x, y, seq = heapq.heappop(pq)
-
-        if (x, y) == end:
-            return seq + "A"
-
-        if (x, y, seq) in visited:
-            continue
-        
-        visited.add((x, y, seq))
-
-        for new_dir in DIRECTIONS:
-            dx, dy = DIRECTIONS[new_dir]
-            nx, ny = x + dx, y + dy
-
-            if nx >= 0 and nx < len(map) and ny >= 0 and ny < len(map[nx]) and map[nx][ny] != ' ':
-                new_cost = cost + 1
-                dir = "" if seq == "" else seq[-1]
-
-                # Get sequences with the least direction changes
-                if dir != new_dir:
-                    new_cost += 1
-                    
-                    # Get sequences with button furthest away from A in front when moving diagonally
-                    if new_dir == "<" and dir in ["v", "^"] or new_dir == "v" and dir == ">":
-                        new_cost += 1
-
-                heapq.heappush(pq, (new_cost, nx, ny, seq+new_dir))
-    return
-
-def get_sequence(code, n):
-    numpad_moves_dict = get_moves_dict(NUMPAD)
-    dirpad_moves_dict = get_moves_dict(DIRPAD)
-
-    sequence = ""
-
-    for i, num in enumerate(code):
-        if i == 0:
-            sequence += numpad_moves_dict["A"][num]
-        else:
-            sequence += numpad_moves_dict[code[i-1]][num]
-
-    for _ in range(n):
-        tmp = ""
-
-        for i, dir in enumerate(sequence):
+        for i, dir in enumerate(seq):
             if i == 0:
-                tmp += dirpad_moves_dict["A"][dir]
+                new_seq += get_seq(DIR_DICT["A"][dir], n-1)
             else:
-                tmp += dirpad_moves_dict[sequence[i-1]][dir]
+                new_seq += get_seq(DIR_DICT[seq[i-1]][dir], n-1)
 
-        sequence = tmp
+        return new_seq
 
-    return sequence
+    return seq
 
 def parse(puzzle_input):
     """Parse input."""
@@ -98,13 +51,36 @@ def part1(data):
     complexity = 0
 
     for code in data:
-        sequence = get_sequence(code, 2)
-        complexity += len(sequence) * int(code[:-1])
+        seq = ""
+
+        for i, num in enumerate(code):
+            if i == 0:
+                seq += NUM_DICT["A"][num]
+            else:
+                seq += NUM_DICT[code[i-1]][num]
+
+        seq = get_seq(seq, 2)
+        complexity += len(seq) * int(code[:-1])
 
     return complexity
 
 def part2(data):
     """Solve part 2."""
+    complexity = 0
+
+    for code in data:
+        seq = ""
+
+        for i, num in enumerate(code):
+            if i == 0:
+                seq += NUM_DICT["A"][num]
+            else:
+                seq += NUM_DICT[code[i-1]][num]
+
+        seq = get_seq(seq, 25)
+        complexity += len(seq) * int(code[:-1])
+
+    return complexity
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
