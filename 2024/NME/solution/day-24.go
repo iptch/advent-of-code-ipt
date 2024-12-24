@@ -263,17 +263,21 @@ func printGraph(gates map[string]*Gate) {
 	}
 }
 
+func swap(gateA *Gate, gateB *Gate, gates map[string]*Gate) {
+	gateA.OUT, gateB.OUT = gateB.OUT, gateA.OUT
+	gates[gateA.OUT] = gateA
+	gates[gateB.OUT] = gateB
+}
+
 func (d Day24) PartTwo(lines []string) string {
 	gates, xs, ys, zs, startingValues := parseDay24(lines)
 
-	x, y := assembleResult(xs, 'x', startingValues), assembleResult(ys, 'y', startingValues)
-	z := computeResult(zs, startingValues, gates)
-	fmt.Printf("x: [%d] %b\n", x, x)
-	fmt.Printf("y: [%d] %b\n", y, y)
-	fmt.Printf("z: [%d] %b\n", z, z)
+	copiedStartingValues := make(map[string]bool)
+	for key, value := range startingValues {
+		copiedStartingValues[key] = value
+	}
+	x, y := assembleResult(xs, 'x', copiedStartingValues), assembleResult(ys, 'y', copiedStartingValues)
 	expectedOutput := x + y
-	fmt.Printf("a: [%d] %b\n", expectedOutput, expectedOutput)
-	return ""
 
 	gateList := make([]*Gate, len(gates))
 	i := 0
@@ -281,15 +285,26 @@ func (d Day24) PartTwo(lines []string) string {
 		gateList[i] = gate
 		i++
 	}
-	permutations := permuteAndChooseN(switches*2, &gateList)
-	fmt.Println(len(permutations))
+
+	// TODO: I found these values manually by looking at the a graph rendering
+	// TODO (continued): Automate finding the values by inspecting the blocks of the carry bit adder
+	permutations := [][]*Gate{
+		{
+			gates["dhg"],
+			gates["z06"],
+			gates["dpd"],
+			gates["brk"],
+			gates["z23"],
+			gates["bhd"],
+			gates["z38"],
+			gates["nbf"],
+		},
+	}
 	for _, possibleSwitch := range permutations {
-		for i := 0; i < switches; i++ {
-			a, b := possibleSwitch[2*i], possibleSwitch[2*i+1]
-			a.IN1, b.IN1 = b.IN1, a.IN1
-			a.IN2, b.IN2 = b.IN2, a.IN2
+		for i := 0; i < len(possibleSwitch)/2; i++ {
+			swap(possibleSwitch[2*i], possibleSwitch[2*i+1], gates)
 		}
-		copiedStartingValues := make(map[string]bool)
+		copiedStartingValues = make(map[string]bool)
 		for key, value := range startingValues {
 			copiedStartingValues[key] = value
 		}
@@ -298,14 +313,10 @@ func (d Day24) PartTwo(lines []string) string {
 		if expectedOutput == computedOutput {
 			return prettyPrintSwitches(possibleSwitch)
 		}
-		for i := 0; i < switches; i++ {
-			a, b := possibleSwitch[2*i], possibleSwitch[2*i+1]
-			a.IN1, b.IN1 = b.IN1, a.IN1
-			a.IN2, b.IN2 = b.IN2, a.IN2
+		for i := 0; i < len(possibleSwitch)/2; i++ {
+			swap(possibleSwitch[2*i], possibleSwitch[2*i+1], gates)
 		}
 	}
 
-	fmt.Println(gates, zs, startingValues)
-	fmt.Println(x, y)
-	return ""
+	panic("no valid permutations found")
 }
