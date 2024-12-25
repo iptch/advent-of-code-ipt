@@ -10,23 +10,13 @@ def is_safe(row):
 
 def parse(puzzle_input):
     """Parse input."""
-    rows = puzzle_input.splitlines()
 
-    for i in range(len(rows)):
-        rows[i] = [int(item) for item in rows[i].split()]
-    
-    return rows
+    return [[int(item) for item in row.split()] for row in puzzle_input.splitlines()]
 
 def part1(data):
     """Solve part 1."""
 
-    count = 0
-
-    for row in data:
-        if is_safe(row):
-            count += 1
-
-    return count
+    return sum([1 if is_safe(row) else 0 for row in data])
 
 def part2(data):
     """Solve part 2."""

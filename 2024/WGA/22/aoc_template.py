@@ -45,8 +45,8 @@ def part2(data):
     for i, init_number in enumerate(data):
         prices = [secret_number % 10 for secret_number in get_secret_numbers(init_number, 2000)]
         changes = [",".join([str(n - m) for m, n in zip(prices[j-4:j], prices[j-3:j+1])]) for j in range(len(prices)) if j > 3]
-        buyers[i] = list(zip(prices[4:], changes)
-)
+        buyers[i] = list(zip(prices[4:], changes))
+
     for buyer in buyers:
         seen_sequences = []
 

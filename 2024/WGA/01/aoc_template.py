@@ -2,37 +2,28 @@
 
 import pathlib
 import sys
-import math
 
 def parse(puzzle_input):
     """Parse input."""
     rows = puzzle_input.splitlines()
-
     col1 = [int(row.split()[0]) for row in rows]
     col2 = [int(row.split()[1]) for row in rows]
     
-    return [col1, col2]
+    return col1, col2
 
 def part1(data):
     """Solve part 1."""
-    sum = 0
+    col1, col2 = data
+    col1.sort()
+    col2.sort()
 
-    data[0].sort()
-    data[1].sort()
-
-    for i in range(len(data[0])):
-        sum += abs(data[0][i] - data[1][i])
-
-    return sum
+    return sum([abs(x - col2[i]) for i, x in enumerate(col1)])
 
 def part2(data):
     """Solve part 2."""
-    sum = 0
+    col1, col2 = data
 
-    for x in data[0]:
-        sum += x * data[1].count(x)
-
-    return sum
+    return sum([x * col2.count(x) for x in col1])
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

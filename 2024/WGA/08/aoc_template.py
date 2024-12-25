@@ -9,53 +9,52 @@ FREQUENCIES = ascii_letters + "0123456789"
 def get_antinodes(puzzle_part, locations, map_size):
     antinodes = []
 
-    for i in range(len(locations)):
+    for i, location in enumerate(locations):
+        x, y = location
+
         for j in range(i+1, len(locations)):
-            vector = (locations[i][0] - locations[j][0], locations[i][1] - locations[j][1])
+            jx, jy = locations[j]
+            dx, dy = x - jx, y - jy
 
             for k in [-2, 1] if puzzle_part == 1 else range(-map_size, map_size):
-                antinode = (locations[i][0] + k * vector[0], locations[i][1] + k * vector[1])
+                nx, ny = x + k * dx, y + k * dy
                 
-                if antinode[0] >= 0 and antinode[0] < map_size and antinode[1] >= 0 and antinode[1] < map_size:
-                    antinodes.append(antinode)
+                if nx >= 0 and nx < map_size and ny >= 0 and ny < map_size:
+                    antinodes.append((nx, ny))
 
     return antinodes
 
 def parse(puzzle_input):
     """Parse input."""
     map = puzzle_input.splitlines()
-    
     locations = []
 
-    for i in range(len(map)):
-        for j in range(len(map[i])):
-            if map[i][j] != ".":
-                locations.append((i, j, map[i][j]))
+    for x, row in enumerate(map):
+        for y, cell in enumerate(row):
+            if map[x][y] != ".":
+                locations.append((x, y, cell))
 
-    return {
-        "map": map,
-        "locations": locations
-    }
+    return map, locations
 
 def part1(data):
     """Solve part 1."""
-    map_size = len(data["map"])
+    map, locations = data
     antinodes = []
 
     for frequency in FREQUENCIES:
-        locations = [location for location in data["locations"] if location[2] == frequency]
-        antinodes += get_antinodes(1, locations, map_size)
+        locations_filtered = [(x, y) for x, y, f in locations if f == frequency]
+        antinodes += get_antinodes(1, locations_filtered, len(map))
 
     return len(list(dict.fromkeys(antinodes)))
 
 def part2(data):
     """Solve part 2."""
-    map_size = len(data["map"])
+    map, locations = data
     antinodes = []
 
     for frequency in FREQUENCIES:
-        locations = [location for location in data["locations"] if location[2] == frequency]
-        antinodes += get_antinodes(2, locations, map_size)
+        locations_filtered = [(x, y) for x, y, f in locations if f == frequency]
+        antinodes += get_antinodes(2, locations_filtered, len(map))
 
     return len(list(dict.fromkeys(antinodes)))
 

@@ -53,7 +53,7 @@ def parse(puzzle_input):
     register_a, register_b, register_c = list(map(int, re.findall(r"\d+", registers)))
     program = list(map(int, re.findall(r"[0-7]", program)))
 
-    return (register_a, register_b, register_c, program)
+    return register_a, register_b, register_c, program
 
 def part1(data):
     """Solve part 1."""

@@ -76,7 +76,7 @@ def parse(puzzle_input):
     map, movements = puzzle_input.split("\n\n")
     map = [list(row) for row in map.splitlines()]
 
-    return (map, movements.replace("\n",""))
+    return map, movements.replace("\n","")
 
 def part1(data):
     """Solve part 1."""
@@ -92,9 +92,6 @@ def part1(data):
                 break
 
     move(x_start, y_start, map, movements)
-
-    for row in map:
-        print("".join(row))
 
     return get_gps(map)
 

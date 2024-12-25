@@ -43,28 +43,27 @@ def parse(puzzle_input):
     rules = [[int(page) for page in rule.split("|")] for rule in input[0].split("\n")]
     updates = [[int(page) for page in update.split(",")] for update in input[1].split("\n")]
 
-    return {
-        "rules": rules,
-        "updates": updates
-    }
+    return rules, updates
 
 def part1(data):
     """Solve part 1."""
+    rules, updates = data
     sum = 0
 
-    for update in data["updates"]:
-        if is_valid_update(data["rules"], update):
+    for update in updates:
+        if is_valid_update(rules, update):
             sum += update[int((len(update)-1) / 2)]
 
     return sum
 
 def part2(data):
     """Solve part 2."""
+    rules, updates = data
     sum = 0
 
-    for update in data["updates"]:
-        if not is_valid_update(data["rules"], update):
-            quick_sort(data["rules"], update, 0, len(update)-1)
+    for update in updates:
+        if not is_valid_update(rules, update):
+            quick_sort(rules, update, 0, len(update)-1)
             sum += update[int((len(update)-1) / 2)]
 
     return sum

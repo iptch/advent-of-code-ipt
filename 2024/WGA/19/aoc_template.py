@@ -35,7 +35,7 @@ def parse(puzzle_input):
     patterns = tuple(patterns.split(", "))
     designs = designs.splitlines()
 
-    return (patterns, designs)
+    return patterns, designs
 
 def part1(data):
     """Solve part 1."""

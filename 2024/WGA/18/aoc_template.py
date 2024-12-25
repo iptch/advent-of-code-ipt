@@ -36,7 +36,7 @@ def parse(puzzle_input):
     x_limit = max([x for x, _ in bytes]) + 1
     y_limit = max([y for _, y in bytes]) + 1
 
-    return (bytes, x_limit, y_limit)
+    return bytes, x_limit, y_limit
 
 def part1(data):
     """Solve part 1."""

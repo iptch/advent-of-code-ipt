@@ -48,7 +48,7 @@ def parse(puzzle_input):
             elif start is not None and end is not None:
                 break
 
-    return (start, end, [list(row) for row in puzzle_input.splitlines()])
+    return start, end, [list(row) for row in puzzle_input.splitlines()]
 
 def part1(data):
     """Solve part 1."""
