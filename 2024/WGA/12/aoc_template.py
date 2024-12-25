@@ -5,34 +5,27 @@ import sys
 
 DIRECTIONS = {"^": (-1, 0), "v": (1, 0), "<": (0, -1), ">": (0, 1)}
 
-def get_region(prev_plant, x, y, map, path, visited):
+def get_region(x, y, map, search_log):
     plant = map[x][y]
+    search_log[x][y] = plant
+
+    areas = 1
+    perimeters = 0
+    sides = 0
+
+    for dx, dy in DIRECTIONS.values():
+        nx, ny = x + dx, y + dy
+
+        if 0 <= nx < len(map) and 0 <= ny < len(map[nx]) and plant == map[nx][ny]:
+            if search_log[nx][ny] == None:
+                new_areas, new_perimeters, new_sides = get_region(nx, ny, map, search_log)
+                areas += new_areas
+                perimeters += new_perimeters
+                sides += new_sides
+        else:
+            perimeters += 1
     
-    if (x, y) not in path:
-        sides = 0
-
-        if plant == prev_plant:
-            path.append((x, y))
-            visited[x][y] = True
-
-            areas = 1
-            perimeters = 0
-
-            for dx, dy in DIRECTIONS.values():
-                nx, ny = x + dx, y + dy
-
-                if 0 <= nx < len(map) and 0 <= ny < len(map[nx]):
-                    res = get_region(plant, nx, ny, map, path, visited)
-                    areas += res[0]
-                    perimeters += res[1]
-                else:
-                    perimeters += 1
-            
-            return (areas, perimeters, sides)
-
-        return (0, 1, sides)
-    
-    return (0, 0, 0)
+    return (areas, perimeters, sides)
 
 def parse(puzzle_input):
     """Parse input."""
@@ -41,28 +34,18 @@ def parse(puzzle_input):
 def part1(data):
     """Solve part 1."""
     sum = 0
-    visited = [[False] * len(row) for row in data]
+    search_log = [[None] * len(row) for row in data]
 
-    for x, row in enumerate(data):
+    for x, row in enumerate(search_log):
         for y, cell in enumerate(row):
-            if not visited[x][y]:
-                areas, perimeters, _ = get_region(cell, x, y, data, [], visited)
+            if cell == None:
+                areas, perimeters, _ = get_region(x, y, data, search_log)
                 sum += areas * perimeters
 
     return sum
 
 def part2(data):
     """Solve part 2."""
-    sum = 0
-    visited = [[False] * len(row) for row in data]
-
-    for x, row in enumerate(data):
-        for y, cell in enumerate(row):
-            if not visited[x][y]:
-                areas, _, sides = get_region(cell, x, y, data, [], visited)
-                sum += areas * sides
-
-    return sum
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
