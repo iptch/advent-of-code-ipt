@@ -3,27 +3,61 @@
 import pathlib
 import sys
 
-DIRECTIONS = {"^": (-1, 0), "v": (1, 0), "<": (0, -1), ">": (0, 1)}
+DIRECTIONS = [(-1, 0), (0, 1), (1, 0), (0, -1)]
+DIAGONALS = [(-1, 1), (1, 1), (1, -1), (-1, -1)]
 
-def get_region(x, y, map, search_log):
+def is_on_map(x, y, map):
+    return 0 <= x < len(map) and 0 <= y < len(map[x])
+
+def get_inner_corners(x, y, map):
     plant = map[x][y]
-    search_log[x][y] = plant
+    corners = 0
 
-    areas = 1
-    perimeters = 0
-    sides = 0
-
-    for dx, dy in DIRECTIONS.values():
+    for diag in DIAGONALS:
+        dx, dy = diag
         nx, ny = x + dx, y + dy
 
-        if 0 <= nx < len(map) and 0 <= ny < len(map[nx]) and plant == map[nx][ny]:
-            if search_log[nx][ny] == None:
-                new_areas, new_perimeters, new_sides = get_region(nx, ny, map, search_log)
+        if (is_on_map(nx, ny, map) and plant != map[nx][ny] and
+            is_on_map(x, ny, map) and plant == map[x][ny] and
+            is_on_map(nx, y, map) and plant == map[nx][y]):
+            corners += 1
+
+    return corners
+
+def get_outer_corners(x, y, map):
+    plant = map[x][y]
+    corners = 0
+
+    for diag in DIAGONALS:
+        dx, dy = diag
+        nx, ny = x + dx, y + dy
+
+        if ((not is_on_map(x, ny, map) or plant != map[x][ny]) and
+            (not is_on_map(nx, y, map) or plant != map[nx][y])):
+            corners += 1
+
+    return corners
+
+def get_region(x, y, map, visited):
+    plant = map[x][y]
+    visited[x][y] = True
+    areas, perimeters, sides = 1, 0, 0
+
+    for i in range(len(DIRECTIONS)):
+        dx, dy = DIRECTIONS[i]
+        nx, ny = x + dx, y + dy
+
+        if is_on_map(nx, ny, map) and plant == map[nx][ny]:
+            if not visited[nx][ny]:
+                new_areas, new_perimeters, new_sides = get_region(nx, ny, map, visited)
                 areas += new_areas
                 perimeters += new_perimeters
                 sides += new_sides
         else:
             perimeters += 1
+    
+    sides += get_inner_corners(x, y, map)
+    sides += get_outer_corners(x, y, map)
     
     return (areas, perimeters, sides)
 
@@ -34,18 +68,28 @@ def parse(puzzle_input):
 def part1(data):
     """Solve part 1."""
     sum = 0
-    search_log = [[None] * len(row) for row in data]
+    visited = [[False] * len(row) for row in data]
 
-    for x, row in enumerate(search_log):
+    for x, row in enumerate(visited):
         for y, cell in enumerate(row):
-            if cell == None:
-                areas, perimeters, _ = get_region(x, y, data, search_log)
+            if not cell:
+                areas, perimeters, _ = get_region(x, y, data, visited)
                 sum += areas * perimeters
 
     return sum
 
 def part2(data):
     """Solve part 2."""
+    sum = 0
+    visited = [[None] * len(row) for row in data]
+
+    for x, row in enumerate(visited):
+        for y, cell in enumerate(row):
+            if not cell:
+                areas, _, sides = get_region(x, y, data, visited)
+                sum += areas * sides
+
+    return sum
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

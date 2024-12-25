@@ -25,18 +25,8 @@ def get_simulations(robots, x_limit, y_limit, t_limit):
             x, y, dx, dy = robot
             nx = x + dx
             ny = y + dy
-
-            if nx < 0:
-                nx += x_limit
-            elif nx >= x_limit:
-                nx -= x_limit
-
-            if ny < 0:
-                ny += y_limit
-            elif ny >= y_limit:
-                ny -= y_limit
-
-            new_robots.append((nx, ny, dx, dy))
+            
+            new_robots.append((nx % x_limit, ny % y_limit, dx, dy))
 
         simulations[i] = (get_safety_factor(new_robots, x_limit, y_limit), new_robots)
 
