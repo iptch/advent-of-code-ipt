@@ -6,6 +6,16 @@ import copy
 
 sys.setrecursionlimit(25000)
 
+DIRECTIONS = {"^": (-1, 0), ">": (0, 1), "v": (1, 0), "<": (0, -1)}
+
+def get_start(map):
+    for x, row in enumerate(map):
+        for y, cell in enumerate(row):
+            if cell == "@":
+                return x, y
+    
+    raise ValueError("No start position found")
+
 def get_gps(map):
     sum = 0
 
@@ -16,60 +26,39 @@ def get_gps(map):
 
     return sum
 
+def push(x, y, dx, dy, map):
+    nx, ny = x + dx, y + dy
+
+    if map[nx][ny] == "#":
+        return False
+    elif map[nx][ny] == ".":
+        map[x][y] = "."
+        map[nx][ny] = "O"
+
+        return True
+    else:
+        if push(nx, ny, dx, dy, map):
+            map[x][y] = "."
+            map[nx][ny] = "O"
+
+            return True
+
+    return False
+
 def move(x, y, map, movements):
     if len(movements) == 0:
         return (x, y)
     
-    new_x = x
-    new_y = y
+    dx, dy = DIRECTIONS[movements[0]]
+    nx, ny = x + dx, y + dy
     
-    if movements[0] == "^":
-        for i in range(x-1, 0, -1):
-            if map[i][y] == "#":
-                break
-            elif map[i][y] == ".":
-                if i < x-1:
-                    for j in range(i+1, x):
-                        map[j-1][y] = map[j][y]
+    if map[nx][ny] == "." or map[nx][ny] == "O" and push(nx, ny, dx, dy, map):
+        map[x][y] = "."
+        map[nx][ny] = "@"
 
-                new_x = x - 1
-                break
-    elif movements[0] == "v":
-        for i in range(x+1, len(map)):
-            if map[i][y] == "#":
-                break
-            elif map[i][y] == ".":
-                if i > x+1:
-                    for j in range(x+1, i):
-                        map[j+1][y] = map[j][y]
+        return move(nx, ny, map, movements[1:])
 
-                new_x = x + 1
-                break
-    elif movements[0] == "<":
-        for i in range(y-1, 0, -1):
-            if map[x][i] == "#":
-                break
-            elif map[x][i] == ".":
-                if i < y-1:
-                    map[x][i:y-1] = map[x][i+1:y]
-
-                new_y = y - 1
-                break
-    else:
-        for i in range(y+1, len(map[x])):
-            if map[x][i] == "#":
-                break
-            elif map[x][i] == ".":
-                if i > y+1:
-                    map[x][y+2:i+1] = map[x][y+1:i]
-
-                new_y = y + 1
-                break
-
-    map[x][y] = "."
-    map[new_x][new_y] = "@"
-
-    return move(new_x, new_y, map, movements[1:])
+    return move(x, y, map, movements[1:])
 
 def parse(puzzle_input):
     """Parse input."""
@@ -80,36 +69,27 @@ def parse(puzzle_input):
 
 def part1(data):
     """Solve part 1."""
-    map = copy.deepcopy(data[0])
-    movements = data[1]
-    x_start = y_start = None
+    map, movements = data
+    map = copy.deepcopy(map)
 
-    for x, row in enumerate(map):
-        for y, cell in enumerate(row):
-            if cell == "@":
-                x_start = x
-                y_start = y
-                break
+    x_start, y_start = get_start(map)
 
     move(x_start, y_start, map, movements)
+
+    for row in map:
+        print("".join(row))
 
     return get_gps(map)
 
 def part2(data):
     """Solve part 2."""
-    map = copy.deepcopy(data[0])
-    movements = data[1]
-    x_start = y_start = None
+    map, movements = data
+    map = copy.deepcopy(map)
 
     for x, row in enumerate(map):
         map[x] = list("".join(row).replace("#", "##").replace("O", "[]").replace(".", "..").replace("@", "@."))
 
-    for x, row in enumerate(map):
-        for y, cell in enumerate(row):
-            if cell == "@":
-                x_start = x
-                y_start = y
-                break
+    x_start, y_start = get_start(map)
 
     move(x_start, y_start, map, movements)
 
