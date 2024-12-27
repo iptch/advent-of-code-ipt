@@ -26,32 +26,33 @@ def get_gps(map):
 
     return sum
 
-def push_slim_boxes(x, y, dx, dy, map):
+def push_slim(x, y, dx, dy, map):
     nx, ny = x + dx, y + dy
 
     if map[nx][ny] == "#":
         return False
-    elif map[nx][ny] == "." or map[nx][ny] in ["O", "[", "]"] and push_slim_boxes(nx, ny, dx, dy, map):
+    elif map[nx][ny] == "." or map[nx][ny] in ["O", "[", "]"] and push_slim(nx, ny, dx, dy, map):
         map[nx][ny], map[x][y] = map[x][y], map[nx][ny]
+
         return True
     
     return False
 
-def push_wide_boxes(x, y, dx, map):
+def push_wide(x, y, dx, map, sim):
     nx = x + dx
-    ny1 = y
-    ny2 = y + 1 if map[x][y] == "[" else y - 1
+    ny1, ny2 = y, y + 1 if map[x][y] == "[" else y - 1
 
     if map[nx][ny1] == "#" or map[nx][ny2] == "#":
         return False
-    
     elif (map[nx][ny1] == "." and map[nx][ny2] == "." or
-          map[nx][ny1] == map[x][ny1] and map[nx][ny2] == map[x][ny2] and push_wide_boxes(nx, ny1, dx, map) or
-          map[nx][ny1] == map[x][ny2] and map[nx][ny2] == map[x][ny1] and push_wide_boxes(nx, ny1, dx, map) and push_wide_boxes(nx, ny2, dx, map) or
-          map[nx][ny1] == map[x][ny2] and map[nx][ny2] == "." and push_wide_boxes(nx, ny1, dx, map) or
-          map[nx][ny2] == map[x][ny1] and map[nx][ny1] == "." and push_wide_boxes(nx, ny2, dx, map)):
-        map[nx][ny1], map[x][ny1] = map[x][ny1], map[nx][ny1]
-        map[nx][ny2], map[x][ny2] = map[x][ny2], map[nx][ny2]
+          map[nx][ny1] == map[x][ny1] and map[nx][ny2] == map[x][ny2] and push_wide(nx, ny1, dx, map, sim) or
+          map[nx][ny1] == map[x][ny2] and map[nx][ny2] == map[x][ny1] and push_wide(nx, ny1, dx, map, sim) and push_wide(nx, ny2, dx, map, sim) or
+          map[nx][ny1] == map[x][ny2] and map[nx][ny2] == "." and push_wide(nx, ny1, dx, map, sim) or
+          map[nx][ny2] == map[x][ny1] and map[nx][ny1] == "." and push_wide(nx, ny2, dx, map, sim)):
+        if not sim:
+            map[nx][ny1], map[x][ny1] = map[x][ny1], map[nx][ny1]
+            map[nx][ny2], map[x][ny2] = map[x][ny2], map[nx][ny2]
+
         return True
     
     return False
@@ -64,10 +65,15 @@ def move(x, y, map, movements):
     nx, ny = x + dx, y + dy
     
     if (map[nx][ny] == "." or
-        map[nx][ny] == "O" and push_slim_boxes(nx, ny, dx, dy, map) or
-        map[nx][ny] in ["[", "]"] and dx == 0 and push_slim_boxes(nx, ny, dx, dy, map) or
-        map[nx][ny] in ["[", "]"] and dy == 0 and push_wide_boxes(nx, ny, dx, map)):
+        map[nx][ny] == "O" and push_slim(nx, ny, dx, dy, map) or
+        map[nx][ny] in ["[", "]"] and dx == 0 and push_slim(nx, ny, dx, dy, map)):
         map[nx][ny], map[x][y] = map[x][y], map[nx][ny]
+
+        return move(nx, ny, map, movements[1:])
+    elif map[nx][ny] in ["[", "]"] and dy == 0 and push_wide(nx, ny, dx, map, True):
+        push_wide(nx, ny, dx, map, False)
+        map[nx][ny], map[x][y] = map[x][y], map[nx][ny]
+        
         return move(nx, ny, map, movements[1:])
 
     return move(x, y, map, movements[1:])
@@ -101,10 +107,6 @@ def part2(data):
     x_start, y_start = get_start(map)
 
     move(x_start, y_start, map, movements)
-
-    # Works with example but not with input
-    for row in map:
-        print("".join(row))
 
     return get_gps(map)
 
