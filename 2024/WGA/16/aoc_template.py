@@ -16,7 +16,7 @@ def dijkstra(start, end, map):
 
         if (x, y) == end:
             return cost
-
+        
         if (x, y, dir) in visited:
             continue
         
@@ -26,12 +26,14 @@ def dijkstra(start, end, map):
         nx, ny = x + dx, y + dy
 
         if map[nx][ny] != "#":
-            heapq.heappush(pq, (cost+1, nx, ny, dir))
+            new_cost = cost + 1
+            heapq.heappush(pq, (new_cost, nx, ny, dir))
 
-        for new_dir in [DIRECTIONS[(DIRECTIONS.index(dir) + 1) % 4],
-                        DIRECTIONS[(DIRECTIONS.index(dir) - 1) % 4]]:
-            heapq.heappush(pq, (cost+1000, x, y, new_dir))
-
+        for rotation in [-1, 1]:
+            new_dir = DIRECTIONS[(DIRECTIONS.index(dir) + rotation) % 4]
+            new_cost = cost + 1000
+            heapq.heappush(pq, (new_cost, x, y, new_dir))
+    
     return
 
 def parse(puzzle_input):
