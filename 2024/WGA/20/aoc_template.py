@@ -37,6 +37,19 @@ def dijkstra(start, end, map):
 
     return
 
+def get_cheats(visited, t_limit, cheat_limit):
+    cheats = 0
+
+    for i, start in enumerate(visited):
+        for j, end in enumerate(visited[i+t_limit:]):
+            cheat_length = manhattan_dist(start, end)
+            t_saved = j + t_limit - cheat_length
+
+            if cheat_length <= cheat_limit and t_saved >= t_limit:
+                cheats += 1
+
+    return cheats
+
 def parse(puzzle_input):
     """Parse input."""
     start = end = None
@@ -58,34 +71,16 @@ def part1(data):
     start, end, map = data
     t_limit = 2 if len(map) == 15 else 100
     visited = dijkstra(start, end, map)[1]
-    cheats = 0
 
-    for i, start in enumerate(visited):
-        for j, end in enumerate(visited[i+t_limit:]):
-            cheat_length = manhattan_dist(start, end)
-            t_saved = j + t_limit - cheat_length
-
-            if cheat_length <= 2 and t_saved >= t_limit:
-                cheats += 1
-
-    return cheats
+    return get_cheats(visited, t_limit, 2)
 
 def part2(data):
     """Solve part 2."""
     start, end, map = data
     t_limit = 50 if len(map) == 15 else 100
     visited = dijkstra(start, end, map)[1]
-    cheats = 0
 
-    for i, start in enumerate(visited):
-        for j, end in enumerate(visited[i+t_limit:]):
-            cheat_length = manhattan_dist(start, end)
-            t_saved = j + t_limit - cheat_length
-
-            if cheat_length <= 20 and t_saved >= t_limit:
-                cheats += 1
-
-    return cheats
+    return get_cheats(visited, t_limit, 20)
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
