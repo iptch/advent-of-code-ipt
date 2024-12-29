@@ -3,6 +3,7 @@
 import pathlib
 import sys
 import heapq
+from collections import defaultdict
 
 DIRECTIONS = ["^", ">", "v", "<"]
 MOVES = {"^": (-1, 0), ">": (0, 1), "v": (1, 0), "<": (0, -1)}
@@ -10,12 +11,12 @@ MOVES = {"^": (-1, 0), ">": (0, 1), "v": (1, 0), "<": (0, -1)}
 def dijkstra(start, end, map):
     pq = [(0, start[0], start[1], ">")]
     visited = set()
+    costs = defaultdict(lambda: float('inf'))
+    costs[start] = 0
+    prev_tiles = defaultdict(list)
 
     while pq:
         cost, x, y, dir = heapq.heappop(pq)
-
-        if (x, y) == end:
-            return cost
         
         if (x, y, dir) in visited:
             continue
@@ -27,14 +28,48 @@ def dijkstra(start, end, map):
 
         if map[nx][ny] != "#":
             new_cost = cost + 1
-            heapq.heappush(pq, (new_cost, nx, ny, dir))
+
+            if new_cost <= costs[(nx, ny, dir)]:
+                if new_cost < costs[(nx, ny, dir)]:
+                    prev_tiles[(nx, ny, dir)] = []
+                    costs[(nx, ny, dir)] = new_cost
+                
+                prev_tiles[(nx, ny, dir)].append((x, y, dir))
+                heapq.heappush(pq, (new_cost, nx, ny, dir))
 
         for rotation in [-1, 1]:
             new_dir = DIRECTIONS[(DIRECTIONS.index(dir) + rotation) % 4]
             new_cost = cost + 1000
-            heapq.heappush(pq, (new_cost, x, y, new_dir))
+
+            if new_cost <= costs[(x, y, new_dir)]:
+                if new_cost < costs[(x, y, new_dir)]:
+                    prev_tiles[(x, y, new_dir)] = []
+                    costs[(x, y, new_dir)] = new_cost
+                
+                prev_tiles[(x, y, new_dir)].append((x, y, dir))
+                heapq.heappush(pq, (new_cost, x, y, new_dir))
+
+    def backtrack_paths(tile):
+        if tile == start:
+            return [[start]]
+
+        paths = []
+
+        for prev_tile in prev_tiles[tile]:
+            for path in backtrack_paths(prev_tile):
+                paths.append(path + [tile])
+
+        return paths
     
-    return
+    end_costs = [costs[(end[0], end[1], dir)] for dir in DIRECTIONS]
+    min_dir = DIRECTIONS[end_costs.index(min(end_costs))]
+
+    shortest_paths = backtrack_paths((end[0], end[1], min_dir))
+
+    best_tiles = [[(x, y) for x, y, _ in path] for path in shortest_paths]
+    best_tiles = list({inner for outer in best_tiles for inner in outer})
+
+    return costs[(end[0], end[1], min_dir)], shortest_paths, best_tiles
 
 def parse(puzzle_input):
     """Parse input."""
@@ -44,7 +79,7 @@ def parse(puzzle_input):
     for x, row in enumerate(map):
         for y, cell in enumerate(row):
             if cell == "S":
-                start = (x, y)
+                start = (x, y, ">")
             elif cell == "E":
                 end = (x, y)
             elif start is not None and end is not None:
@@ -56,10 +91,13 @@ def part1(data):
     """Solve part 1."""
     start, end, map = data
 
-    return dijkstra(start, end, map)
+    return dijkstra(start, end, map)[0]
 
 def part2(data):
     """Solve part 2."""
+    start, end, map = data
+
+    return len(dijkstra(start, end, map)[2])
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
