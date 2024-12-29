@@ -6,6 +6,26 @@ import heapq
 
 DIRECTIONS = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
+def binary_search(low, high, bytes, x_limit, y_limit):
+    if low < high:
+        mid = (high + low) // 2
+        map = [["."] * (x_limit) for _ in range(y_limit)]
+
+        for byte in bytes[:mid]:
+            x, y = byte
+            map[y][x] = "#"
+
+        result = dijkstra((0, 0), (y_limit-1, x_limit-1), map)
+
+        if result == None:
+            high = mid
+        else:
+            low = mid + 1
+
+        return binary_search(low, high, bytes, x_limit, y_limit)
+    
+    return bytes[low-1]
+    
 def dijkstra(start, end, map):
     pq = [(0, start[0], start[1])]
     visited = set()
@@ -28,7 +48,7 @@ def dijkstra(start, end, map):
             if ny >= 0 and ny < len(map) and nx >= 0 and nx < len(map[ny]) and map[ny][nx] != '#':
                 heapq.heappush(pq, (cost+1, nx, ny))
 
-    return
+    return None
 
 def parse(puzzle_input):
     """Parse input."""
@@ -52,6 +72,10 @@ def part1(data):
 
 def part2(data):
     """Solve part 2."""
+    bytes, x_limit, y_limit = data
+    x, y = binary_search(0, len(bytes)-1, bytes, x_limit, y_limit)
+
+    return ",".join([str(x), str(y)])
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
