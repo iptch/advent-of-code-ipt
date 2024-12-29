@@ -6,20 +6,27 @@ import heapq
 
 DIRECTIONS = [(-1, 0), (0, 1), (1, 0), (0, -1)]
 
+def manhattan_dist(pos1, pos2):
+    x1, y1 = pos1
+    x2, y2 = pos2
+
+    return abs(x2 - x1) + abs(y2 - y1)
+
 def dijkstra(start, end, map):
     pq = [(0, start[0], start[1])]
-    visited = set()
+    visited = []
 
     while pq:
         cost, x, y = heapq.heappop(pq)
         
         if (x, y) == end:
-            return cost
+            visited.append((x, y))
+            return cost, visited
 
         if (x, y) in visited:
             continue
         
-        visited.add((x, y))
+        visited.append((x, y))
 
         for dir in DIRECTIONS:
             dx, dy = dir
@@ -49,28 +56,36 @@ def parse(puzzle_input):
 def part1(data):
     """Solve part 1."""
     start, end, map = data
+    t_limit = 2 if len(map) == 15 else 100
+    visited = dijkstra(start, end, map)[1]
+    cheats = 0
 
-    t = dijkstra(start, end, map)
-    cheats = []
+    for i, start in enumerate(visited):
+        for j, end in enumerate(visited[i+t_limit:]):
+            cheat_length = manhattan_dist(start, end)
+            t_saved = j + t_limit - cheat_length
 
-    for x, row in enumerate(map):
-        for y, cell in enumerate(row):
-            if x > 0 and x < len(map)-1 and y > 0 and y < len(row)-1 and cell == "#":
-                if [row[y] for row in map[x-1:x+2]] != "###" or map[x][y-1:y+2] != "###":
-                    map[x][y] = "."
-                    cheats.append(t - dijkstra(start, end, map))
-                    map[x][y] = "#"
+            if cheat_length <= 2 and t_saved >= t_limit:
+                cheats += 1
 
-    return len([cheat for cheat in cheats if cheat >= (2 if len(map) == 15 else 100)])
+    return cheats
 
 def part2(data):
     """Solve part 2."""
     start, end, map = data
+    t_limit = 50 if len(map) == 15 else 100
+    visited = dijkstra(start, end, map)[1]
+    cheats = 0
 
-    t = dijkstra(start, end, map)
-    cheats = []
+    for i, start in enumerate(visited):
+        for j, end in enumerate(visited[i+t_limit:]):
+            cheat_length = manhattan_dist(start, end)
+            t_saved = j + t_limit - cheat_length
 
-    return len([cheat for cheat in cheats if cheat >= (50 if len(map) == 15 else 100)])
+            if cheat_length <= 20 and t_saved >= t_limit:
+                cheats += 1
+
+    return cheats
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
