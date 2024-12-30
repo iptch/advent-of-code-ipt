@@ -41,6 +41,29 @@ def part1(data):
 
 def part2(data):
     """Solve part 2."""
+    gates = data[1]
+    z_msb = max([output for _, _, _, output in gates if output[0] == "z"])
+    wrong_outputs = set()
+
+    # Ripple-carry adder constraints
+    for gate, input1, input2, output in gates:
+        # z outputs mut be connected to XOR gates (except for MSB)
+        if gate != "XOR" and output[0] == "z" and output != z_msb:
+            wrong_outputs.add(output)
+
+        # XOR gates not connected to z outputs must have x and y inputs
+        if gate == "XOR" and output[0] != "z" and input1[0] not in ["x", "y"]:
+            wrong_outputs.add(output)
+
+        # XOR gates not connected to z outputs must be connected to other XOR gates
+        if gate == "XOR" and output[0] != "z" and len([1 for g, i1, i2, _ in gates if g == "XOR" and output in [i1, i2]]) != 1:
+            wrong_outputs.add(output)
+
+        # AND gate outputs must be connected to OR gates (except for LSB)
+        if gate == "AND" and input1 not in ["x00", "y00"] and len([1 for g, i1, i2, _ in gates if g == "OR" and output in [i1, i2]]) != 1:
+            wrong_outputs.add(output)
+
+    return ",".join(sorted(wrong_outputs))
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

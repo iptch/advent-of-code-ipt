@@ -19,12 +19,12 @@ def bron_kerbosch(r, p, x, cliques, graph):
 def get_triangles(graph):
     triangles = []
 
-    for computer1 in graph:
-        for computer2 in graph[computer1]:
-            if computer2 > computer1:
-                for computer3 in graph[computer2]:
-                    if computer3 > computer2 and computer3 in graph[computer1]:
-                        triangles.append({computer1, computer2, computer3})
+    for node1 in graph:
+        for node2 in graph[node1]:
+            if node2 > node1:
+                for node3 in graph[node2]:
+                    if node3 > node2 and node3 in graph[node1]:
+                        triangles.append({node1, node2, node3})
 
     return triangles
 
@@ -34,9 +34,9 @@ def parse(puzzle_input):
 
     graph = defaultdict(set)
 
-    for computer1, computer2 in connections:
-        graph[computer1].add(computer2)
-        graph[computer2].add(computer1)
+    for node1, node2 in connections:
+        graph[node1].add(node2)
+        graph[node2].add(node1)
     
     return graph
 
@@ -44,7 +44,7 @@ def part1(data):
     """Solve part 1."""
     triangles = [",".join(triangle) for triangle in get_triangles(data)]
 
-    return len([triangle for triangle in triangles if re.search("t[a-z]", triangle) != None])
+    return len([1 for triangle in triangles if re.search("t[a-z]", triangle) != None])
 
 def part2(data):
     """Solve part 2."""
