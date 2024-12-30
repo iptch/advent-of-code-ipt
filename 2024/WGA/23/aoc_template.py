@@ -5,38 +5,54 @@ import sys
 import re
 from collections import defaultdict
 
-def get_sets(graph):
-    sets = []
+def bron_kerbosch(r, p, x, cliques, graph):
+    if not p and not x:
+        cliques.append(r)
+
+        return 
+    
+    for v in list(p):
+        bron_kerbosch(r | {v}, p & graph[v], x & graph[v], cliques, graph)
+        p.remove(v)
+        x.add(v)
+
+def get_triangles(graph):
+    triangles = []
 
     for computer1 in graph:
         for computer2 in graph[computer1]:
             if computer2 > computer1:
                 for computer3 in graph[computer2]:
                     if computer3 > computer2 and computer3 in graph[computer1]:
-                        sets.append(",".join([computer1, computer2, computer3]))
+                        triangles.append({computer1, computer2, computer3})
 
-    return sorted(sets)
+    return triangles
 
 def parse(puzzle_input):
     """Parse input."""
+    connections = [row.split("-") for row in puzzle_input.splitlines()]
+
+    graph = defaultdict(set)
+
+    for computer1, computer2 in connections:
+        graph[computer1].add(computer2)
+        graph[computer2].add(computer1)
     
-    return [row.split("-") for row in puzzle_input.splitlines()]
+    return graph
 
 def part1(data):
     """Solve part 1."""
-    graph = defaultdict(set)
+    triangles = [",".join(triangle) for triangle in get_triangles(data)]
 
-    for computer1, computer2 in data:
-        graph[computer1].add(computer2)
-        graph[computer2].add(computer1)
-
-    sets = get_sets(graph)
-    sets_with_t = [set for set in sets if re.search("t[a-z]", set) != None]
-
-    return len(sets_with_t)
+    return len([triangle for triangle in triangles if re.search("t[a-z]", triangle) != None])
 
 def part2(data):
     """Solve part 2."""
+    cliques = []
+    bron_kerbosch(set(), set(data.keys()), set(), cliques, data)
+    largest_clique = max(cliques, key=len)
+
+    return ','.join(sorted(largest_clique))
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
