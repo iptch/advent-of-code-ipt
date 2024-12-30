@@ -9,8 +9,10 @@ def simulate(gate, input1, input2):
         return input1 and input2
     elif gate == "OR":
         return input1 or input2
+    elif gate == "XOR":
+        return input1 != input2
     
-    return input1 != input2
+    raise ValueError(f"Unknown gate: {gate}")
 
 def parse(puzzle_input):
     """Parse input."""

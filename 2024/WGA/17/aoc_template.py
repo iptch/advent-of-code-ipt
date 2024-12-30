@@ -29,7 +29,7 @@ def combo(operand, a, b, c):
     elif operand == 6:
         return c
     
-    raise ValueError("Invalid combo operand")
+    raise ValueError(f"Unknown combo operand: {operand}")
 
 def run_program(program, a, b, c):
     pointer = 0
