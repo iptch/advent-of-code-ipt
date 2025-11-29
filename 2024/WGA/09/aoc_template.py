@@ -6,64 +6,50 @@ import sys
 FREE_SPACE_ID = -1
 
 def get_checksum(blocks):
-    sum = 0
-
-    for i in range(len(blocks)):
-        if blocks[i] > FREE_SPACE_ID:
-            sum += i * blocks[i]
-
-    return sum
+    return sum([i * block for i, block in enumerate(blocks) if block > FREE_SPACE_ID])
 
 def compact_blocks(blocks):
-    compacted_blocks = blocks.copy()
-
-    for i in range(len(compacted_blocks)):
-        if compacted_blocks[i] == FREE_SPACE_ID:
-            for j in range(len(compacted_blocks)-1, 0, -1):
-                if compacted_blocks[j] > FREE_SPACE_ID:
+    for i, free_block in enumerate(blocks):
+        if free_block == FREE_SPACE_ID:
+            for j, file_block in reversed(list(enumerate(blocks))):
+                if file_block > FREE_SPACE_ID:
                     if j == i-1:
-                        return compacted_blocks
-                    else:
-                        compacted_blocks[i] = compacted_blocks[j]
-                        compacted_blocks[j] = FREE_SPACE_ID
-                        break
+                        return blocks
+                    
+                    blocks[i], blocks[j] = file_block, free_block
+                    break
 
     return None
 
 def compact_files(files):
-    compacted_files = files.copy()
-
-    for i in range(len(compacted_files)-1, 0, -1):
-        if compacted_files[i][0] > FREE_SPACE_ID:
-            for j in range(0, i):
-                if compacted_files[j][0] == FREE_SPACE_ID and compacted_files[j][1] >= compacted_files[i][1]:
-                    free_space = compacted_files[j][1] - compacted_files[i][1]
-                    compacted_files[j] = (compacted_files[i][0], compacted_files[i][1])
-                    compacted_files[i] = (FREE_SPACE_ID, compacted_files[i][1])
-                    compacted_files.insert(j+1, (FREE_SPACE_ID, free_space))
+    for i in range(len(files)-1, 0, -1):
+        file_id, file_space = files[i]
+        
+        if file_id > FREE_SPACE_ID:
+            for j, (free_id, free_space) in enumerate(files[:i]):
+                if free_id == FREE_SPACE_ID and free_space >= file_space:
+                    files[i], files[j] = (free_id, file_space), (file_id, file_space)
+                    files.insert(j+1, (free_id, free_space - file_space))
                     break
 
-    return compacted_files
+    return files
 
 def get_blocks(files):
     blocks = []
 
-    for file in files:
-        blocks += [file[0] for _ in range(file[1])]
+    for id, free_space in files:
+        blocks += [id for _ in range(free_space)]
 
     return blocks
 
 def get_files(puzzle_input):
     files = []
-    id = 0
 
     for i in range(0, len(puzzle_input), 2):
-        files.append((id, int(puzzle_input[i])))
+        files.append((i // 2, int(puzzle_input[i])))
 
         if i+1 < len(puzzle_input):
             files.append((FREE_SPACE_ID, int(puzzle_input[i+1])))
-
-        id += 1
 
     return files
 
@@ -78,7 +64,6 @@ def part1(data):
 def part2(data):
     """Solve part 2."""
     compacted_files = compact_files(data)
-
     blocks = []
 
     for file in compacted_files:

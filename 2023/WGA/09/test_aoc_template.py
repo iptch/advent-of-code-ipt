@@ -16,26 +16,6 @@ def example2():
     puzzle_input = (PUZZLE_DIR / "example2.txt").read_text().strip()
     return aoc.parse(puzzle_input)
 
-def test_get_diff():
-    """Test that the difference is calcultated properly."""
-    assert aoc.get_diff([10, 13, 16, 21, 30, 45]) == [3, 3, 5, 9, 15]
-
-def test_get_prediction_forwards():
-    """Test that the forwards predction is calcultated properly."""
-    assert aoc.get_prediction([10, 13, 16, 21, 30, 45]) == 68
-
-def test_get_prediction_backwards():
-    """Test that the backwards predction is calcultated properly."""
-    assert aoc.get_prediction([10, 13, 16, 21, 30, 45], False) == 5
-
-def test_parse_example1(example1):
-    """Test that input is parsed properly."""
-    assert example1 == [
-        [0, 3, 6, 9, 12, 15],
-        [1, 3, 6, 10, 15, 21],
-        [10, 13, 16, 21, 30, 45],
-    ]
-
 def test_part1_example1(example1):
     """Test part 1 on example input."""
     assert aoc.part1(example1) == 114

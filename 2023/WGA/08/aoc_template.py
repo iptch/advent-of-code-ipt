@@ -5,51 +5,45 @@ import sys
 import re
 import math
 
-def get_step(instructions, nodes, start_element, stop_regex):
-
+def get_step_count(instructions, nodes, start_element, stop_regex):
     element = start_element
-    step = 0
+    step_count = 0
 
     while re.match(stop_regex, element) is None:
-        i = step % len(instructions)
-        instruction = instructions[i]
-        element = next(node for node in nodes if node[0] == element)[1 if instruction == "L" else 2]
-        step += 1
+        instruction = instructions[step_count % len(instructions)]
+        element = next((e, l ,r) for e, l, r in nodes if e == element)[1 if instruction == "L" else 2]
+        step_count += 1
         
-    return step
+    return step_count
 
-def lcm_of_array(integers):
-    result = integers[0]
+def lcm(steps):
+    result = steps[0]
 
-    for integer in integers[1:]:
-        result = math.lcm(result, integer)
+    for step in steps[1:]:
+        result = math.lcm(result, step)
 
     return result
 
 def parse(puzzle_input):
     """Parse input."""
+    instructions, nodes = puzzle_input.split("\n\n")
+    nodes = [re.findall("[A-Z|1-9]{3}", node) for node in nodes.splitlines()]
 
-    lines = puzzle_input.splitlines()
-    result = {}
-
-    result["instructions"] = list(lines[0])
-    result["nodes"] = [re.findall(r"[A-Z|1-9]{3}", line) for line in lines[2:]]
-
-    return result
+    return instructions, nodes
 
 def part1(data):
     """Solve part 1."""
+    instructions, nodes = data
 
-    return get_step(data["instructions"], data["nodes"], "AAA", r"ZZZ")
+    return get_step_count(instructions, nodes, "AAA", "ZZZ")
 
 def part2(data):
     """Solve part 2."""
-
-    instructions, nodes = data["instructions"], data["nodes"]
-    start_elements = [node[0] for node in nodes if node[0].endswith("A")]
-    steps = [get_step(instructions, nodes, start_element, r"[A-Z|1-9]{2}Z") for start_element in start_elements]
+    instructions, nodes = data
+    start_elements = [e for e, _, _ in nodes if e.endswith("A")]
+    steps = [get_step_count(instructions, nodes, start_element, "[A-Z|1-9]{2}Z") for start_element in start_elements]
         
-    return lcm_of_array(steps)
+    return lcm(steps)
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

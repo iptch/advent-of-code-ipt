@@ -2,45 +2,36 @@
 
 import pathlib
 import sys
-import math
 
-def get_number_of_options(time, distance):
-    discriminant = math.sqrt(time ** 2 - 4 * (distance + 1))
+def get_options_count(time, distance):
+    discriminant = (time ** 2 - 4 * (distance + 1)) ** .5
+    min_button_time = -((time - discriminant) // -2) # Upside-down floor division
+    max_button_time = (time + discriminant) // 2
 
-    min_button_time = math.ceil((time - discriminant) / 2)
-    max_button_time = math.floor((time + discriminant) / 2)
-
-    return max_button_time - min_button_time + 1
+    return int(max_button_time - min_button_time + 1)
 
 def parse(puzzle_input):
     """Parse input."""
+    times, distances = puzzle_input.splitlines()
 
-    lines = puzzle_input.splitlines()
-
-    maps = {"time": [], "distance": []}
-
-    maps["time"] = [int(x) for x in lines[0].split()[1:]]
-    maps["distance"] = [int(x) for x in lines[1].split()[1:]]
-
-    return maps
+    return times.split()[1:], distances.split()[1:]
 
 def part1(data):
     """Solve part 1."""
-
+    times = [int(time) for time in data[0]]
+    distances = [int(distance) for distance in data[1]]
     result = 1
 
-    for i, time in enumerate(data["time"]):
-        result *= get_number_of_options(time, data["distance"][i])
+    for i, time in enumerate(times):
+        result *= get_options_count(time, distances[i])
 
     return result
 
 def part2(data):
     """Solve part 2."""
+    times, distances = data
 
-    time = int("".join(map(str, data["time"])))
-    distance = int("".join(map(str, data["distance"])))
-
-    return get_number_of_options(time, distance)
+    return get_options_count(int("".join(times)), int("".join(distances)))
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

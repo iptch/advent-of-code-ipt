@@ -25,9 +25,9 @@ def partition(rules, update, low, high):
     for j in range(low, high):
         if violates_rule(rules, update[j], pivot):
             i += 1
-            (update[i], update[j]) = (update[j], update[i])
+            update[i], update[j] = update[j], update[i]
 
-    (update[i + 1], update[high]) = (update[high], update[i + 1])
+    update[i + 1], update[high] = update[high], update[i + 1]
 
     return i + 1
 
@@ -52,7 +52,7 @@ def part1(data):
 
     for update in updates:
         if is_valid_update(rules, update):
-            sum += update[int((len(update)-1) / 2)]
+            sum += update[(len(update)-1) // 2]
 
     return sum
 
@@ -64,7 +64,7 @@ def part2(data):
     for update in updates:
         if not is_valid_update(rules, update):
             quick_sort(rules, update, 0, len(update)-1)
-            sum += update[int((len(update)-1) / 2)]
+            sum += update[(len(update)-1) // 2]
 
     return sum
 

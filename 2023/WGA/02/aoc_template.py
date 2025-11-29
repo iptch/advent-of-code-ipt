@@ -2,27 +2,29 @@
 
 import pathlib
 import sys
-from parse import search
+import re
 
-def parse_number(color, set):
-    result = search("{:d} " + color, set)
-    return 0 if result is None else result.fixed[0]
+COLORS = ["red", "green", "blue"]
 
-def parse_set(set):
-    return [parse_number("red", set), parse_number("green", set), parse_number("blue", set)]
+def parse_cubes(set):
+    cubes = [0, 0, 0]
+
+    for i, colors in enumerate(COLORS):
+        match = re.findall(r"\d+ " + colors, set)
+        
+        if len(match) > 0:
+            cubes[i] += int(match[0].split()[0])
+
+    return cubes
 
 def parse(puzzle_input):
     """Parse input."""
-    return [[parse_set(set) for set in line.split(";")] for line in puzzle_input.splitlines()]
+    return [[parse_cubes(set) for set in game.split("; ")] for game in puzzle_input.splitlines()]
 
 def part1(data):
     """Solve part 1."""
-    
-    red_max = 12
-    green_max = 13
-    blue_max = 14
-
-    result = 0
+    red_max, green_max, blue_max = 12, 13, 14
+    sum = 0
 
     for i, game in enumerate(data):
         red = max([set[0] for set in game])
@@ -30,23 +32,22 @@ def part1(data):
         blue = max([set[2] for set in game])
 
         if red <= red_max and green <= green_max and blue <= blue_max:
-            result += i + 1
+            sum += i + 1
 
-    return result
+    return sum
 
 def part2(data):
     """Solve part 2."""
-
-    result = 0
+    sum = 0
 
     for game in data:
         red = max([set[0] for set in game])
         green = max([set[1] for set in game])
         blue = max([set[2] for set in game])
 
-        result += red * green * blue
+        sum += red * green * blue
 
-    return result
+    return sum
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

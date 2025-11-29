@@ -66,15 +66,15 @@ def brent(f, x0):
 def parse(puzzle_input):
     """Parse input."""
 
-    lines = [list("#" + line + "#") for line in puzzle_input.splitlines()]
-    border = [["#"] * len(lines[0])]
+    rows = [list("#" + row + "#") for row in puzzle_input.splitlines()]
+    border = [["#"] * len(rows[0])]
 
-    return border + lines + border
+    return border + rows + border
 
 def part1(data):
     """Solve part 1."""
 
-    return sum([sum([len(line) - i - 1 for i, x in enumerate(line) if x == "O"]) for line in transpose(tilt_north(data))])
+    return sum([(len(row)-i-1) * row.count("O") for i, row in enumerate(tilt_north(data))])
 
 def part2(data):
     """Solve part 2."""
@@ -87,7 +87,7 @@ def part2(data):
     for _ in range(mu + lam + remainder):
         positions = cycle(positions)
 
-    return (sum([sum([len(line) - i - 1 for i, x in enumerate(line) if x == "O"]) for line in transpose(positions)]))
+    return sum([(len(row)-i-1) * row.count("O") for i, row in enumerate(positions)])
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

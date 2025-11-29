@@ -6,13 +6,11 @@ import re
 
 def parse(puzzle_input):
     """Parse input."""
-
     return puzzle_input
 
 def part1(data):
     """Solve part 1."""
     matches = re.findall("mul\(\d{1,3},\d{1,3}\)", data)
-
     sum = 0
 
     for match in matches:

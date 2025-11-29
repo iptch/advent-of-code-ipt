@@ -3,56 +3,41 @@
 import pathlib
 import sys
 
-def calc(puzzle_part, numbers, test_value, value):
+def calc(puzzle_part, test_value, numbers, result):
     if len(numbers) == 0:
-        return value == test_value
-    else:
-        has_solution_sum = None
-        has_solution_product = None
-        has_solution_concat = None
+        return result == test_value
+    
+    has_solution_sum = None
+    has_solution_product = None
+    has_solution_concat = None
 
-        sum = value + numbers[0]
-        if sum <= test_value:
-            has_solution_sum = calc(puzzle_part, numbers[1:], test_value, sum)
+    sum = result + numbers[0]
+    if sum <= test_value:
+        has_solution_sum = calc(puzzle_part, test_value, numbers[1:], sum)
 
-        product = value * numbers[0]
+    product = result * numbers[0]
+    if product <= test_value:
+        has_solution_product = calc(puzzle_part, test_value, numbers[1:], product)
+
+    if puzzle_part == 2:
+        concat = int(str(result) + str(numbers[0]))
         if product <= test_value:
-            has_solution_product = calc(puzzle_part, numbers[1:], test_value, product)
+            has_solution_concat = calc(puzzle_part, test_value, numbers[1:], concat)
 
-        if puzzle_part == 2:
-            concat = int(str(value) + str(numbers[0]))
-            if product <= test_value:
-                has_solution_concat = calc(puzzle_part, numbers[1:], test_value, concat)
-
-        if has_solution_sum or has_solution_product or has_solution_concat:
-            return True
+    if has_solution_sum or has_solution_product or has_solution_concat:
+        return True
 
 def parse(puzzle_input):
     """Parse input."""
-    return [
-        [int(part[0]), [int(y) for y in part[1].split()]]
-        for part in (row.split(": ") for row in puzzle_input.splitlines())
-    ]
+    return [(int(test_value), [int(i) for i in numbers.split()]) for test_value, numbers in [row.split(": ") for row in puzzle_input.splitlines()]]
 
 def part1(data):
     """Solve part 1."""
-    sum = 0
-
-    for row in data:
-        if calc(1, row[1][1:], row[0], row[1][0]):
-            sum += row[0]
-
-    return sum
+    return sum([test_value for test_value, numbers in data if calc(1, test_value, numbers[1:], numbers[0])])
 
 def part2(data):
     """Solve part 2."""
-    sum = 0
-
-    for row in data:
-        if calc(2, row[1][1:], row[0], row[1][0]):
-            sum += row[0]
-
-    return sum
+    return sum([test_value for test_value, numbers in data if calc(2, test_value, numbers[1:], numbers[0])])
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

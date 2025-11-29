@@ -26,12 +26,10 @@ def parse(puzzle_input):
 
 def part1(data):
     """Solve part 1."""
-
     return sum(blink(number, 25) for number in data)
 
 def part2(data):
     """Solve part 2."""
-
     return sum(blink(number, 75) for number in data)
 
 def solve(puzzle_input):

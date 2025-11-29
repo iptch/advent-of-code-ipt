@@ -33,11 +33,10 @@ def part1(data):
     """Solve part 1."""
     sum = 0
 
-    for i in range(len(data)):
-        for j in range(len(data[i])):
-            if data[i][j] == 0:
-                score = len(list(dict.fromkeys(get_peaks(i, j, data, -1))))
-                sum += score
+    for i, row in enumerate(data):
+        for j, cell in enumerate(row):
+            if cell == 0:
+                sum += len(list(dict.fromkeys(get_peaks(i, j, data, -1))))
 
     return sum
 
@@ -45,11 +44,10 @@ def part2(data):
     """Solve part 2."""
     sum = 0
 
-    for i in range(len(data)):
-        for j in range(len(data[i])):
-            if data[i][j] == 0:
-                score = len((get_peaks(i, j, data, -1)))
-                sum += score
+    for i, row in enumerate(data):
+        for j, cell in enumerate(row):
+            if cell == 0:
+                sum += len((get_peaks(i, j, data, -1)))
 
     return sum
 

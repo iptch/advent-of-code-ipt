@@ -15,16 +15,13 @@ def parse(puzzle_input):
     machines = []
 
     for machine in puzzle_input.split("\n\n"):
-        lines = machine.splitlines()
-        button_a = list(map(int, re.findall(r"\d+", lines[0])))
-        button_b = list(map(int, re.findall(r"\d+", lines[1])))
-        prize = list(map(int, re.findall(r"\d+", lines[2])))
+        button_a, button_b, prize = machine.splitlines()
 
-        machines.append((
-            (button_a[0], button_a[1]),
-            (button_b[0], button_b[1]),
-            (prize[0], prize[1])
-        ))
+        button_a_x, button_a_y = list(map(int, re.findall(r"\d+", button_a)))
+        button_b_x, button_b_y = list(map(int, re.findall(r"\d+", button_b)))
+        prize_x, prize_y = list(map(int, re.findall(r"\d+", prize)))
+
+        machines.append(((button_a_x, button_a_y), (button_b_x, button_b_y), (prize_x, prize_y)))
 
     return machines
 
@@ -33,10 +30,7 @@ def part1(data):
     sum = 0
     
     for machine in data:
-        button_a, button_b, prize = machine
-        button_a_x, button_a_y = button_a
-        button_b_x, button_b_y = button_b
-        prize_x, prize_y = prize
+        (button_a_x, button_a_y), (button_b_x, button_b_y), (prize_x, prize_y) = machine
 
         a = (button_b_y * prize_x - prize_y * button_b_x) / (button_b_y * button_a_x - button_a_y * button_b_x)
         b = (prize_y - a * button_a_y) / button_b_y
@@ -51,10 +45,8 @@ def part2(data):
     sum = 0
     
     for machine in data:
-        button_a, button_b, prize = machine
-        button_a_x, button_a_y = button_a
-        button_b_x, button_b_y = button_b
-        prize_x, prize_y = (prize[0] + OFFSET, prize[1] + OFFSET)
+        (button_a_x, button_a_y), (button_b_x, button_b_y), (prize_x, prize_y) = machine
+        prize_x, prize_y = (prize_x + OFFSET, prize_y + OFFSET)
 
         a = (button_b_y * prize_x - prize_y * button_b_x) / (button_b_y * button_a_x - button_a_y * button_b_x)
         b = (prize_y - a * button_a_y) / button_b_y

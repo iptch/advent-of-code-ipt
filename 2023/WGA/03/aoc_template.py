@@ -4,74 +4,68 @@ import pathlib
 import sys
 import re
 
-REGEX_NUMBERS = r"\d+"
-REGEX_SYMBOLS = r"[^\w\s.]"
-REGEX_GEARS = r"\*"
-
-def extract(regex, line):
+def extract(regex, data):
     result = []
 
-    for match in re.finditer(regex, line):
-        result.append((match.group(), match.start(), match.end()))
+    for i, row in enumerate(data):
+        matches = re.finditer(regex, row)
+
+        for match in matches:
+            result.append((match.group(), i, match.start(), match.end()))
 
     return result
 
-def is_adjacent_to_symbol(data, row, col):
-    for i in range(row - 1, row + 2):
-        for j in range(col - 1, col + 2):
-            if (0 <= i < len(data) and 0 <= j < len(data) and (i != row or j != col) and
-                    re.search(REGEX_SYMBOLS, data[i][j]) is not None):
-                return True
+def is_adjacent_to_symbol(number, data):
+    _, i, start, end = number
+    search_str = ""
+
+    for row in data[max(i-1, 0):min(i+2, len(data))]:
+        search_str += row[max(start-1, 0):min(end+1, len(row))]
+
+    if re.search(r"[^0-9.]", search_str) is not None:
+        return True
 
     return False
 
-def get_adjacent_numbers(numbers_matrix, row, col):
+def get_adjacent_numbers(gear, numbers):
+    _, i_gear, j_gear, _ = gear
     adjacent_numbers = []
 
-    for i in range(row - 1, row + 2):
-        if 0 <= i < len(numbers_matrix):
-            for number in numbers_matrix[i]:
-                if number[1] <= col + 1 and number[2] >= col:
-                    adjacent_numbers.append(int(number[0]))
+    for i in range(i_gear-1, i_gear+2):
+        for val_num, _, start_num, end_num in [number for number in numbers if number[1] == i]:
+            if start_num <= j_gear + 1 and end_num >= j_gear:
+                adjacent_numbers.append(int(val_num))
 
     return adjacent_numbers
 
 def parse(puzzle_input):
     """Parse input."""
-    return puzzle_input.split()
+    return puzzle_input.splitlines()
 
 def part1(data):
     """Solve part 1."""
+    sum = 0
+    numbers = extract(r"\d+", data)
 
-    result = 0
+    for number in numbers:
+        if is_adjacent_to_symbol(number, data):
+            sum += int(number[0])
 
-    numbers_matrix = [extract(REGEX_NUMBERS, line) for line in data]
-
-    for i, numbers in enumerate(numbers_matrix):
-        for j in numbers:
-            for col in range(j[1], j[2]):
-                if is_adjacent_to_symbol(data, i, col):
-                    result += int(j[0])
-                    break
-
-    return result
+    return sum
 
 def part2(data):
     """Solve part 2."""
+    sum = 0
+    numbers = extract(r"\d+", data)
+    gears = extract(r"\*", data)
 
-    result = 0
+    for gear in gears:
+        adjacent_numbers = get_adjacent_numbers(gear, numbers)
 
-    numbers_matrix = [extract(REGEX_NUMBERS, line) for line in data]
-    gears_matrix = [extract(REGEX_GEARS, line) for line in data]
+        if len(adjacent_numbers) == 2:
+            sum += adjacent_numbers[0] * adjacent_numbers[1]
 
-    for i, gears in enumerate(gears_matrix):
-        for j in gears:
-            adjacent_numbers = get_adjacent_numbers(numbers_matrix, i, j[1])
-
-            if len(adjacent_numbers) == 2:
-                result += adjacent_numbers[0] * adjacent_numbers[1]
-
-    return result
+    return sum
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

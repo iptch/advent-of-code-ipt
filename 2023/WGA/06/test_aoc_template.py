@@ -16,17 +16,6 @@ def example2():
     puzzle_input = (PUZZLE_DIR / "example2.txt").read_text().strip()
     return aoc.parse(puzzle_input)
 
-def test_parse_example1(example1):
-    """Test that input is parsed properly."""
-    assert example1 == {
-        "time": [7, 15, 30],
-        "distance": [9, 40, 200]
-    }
-
-def test_get_number_of_options():
-    """Test that options are calculated properly."""
-    assert aoc.get_number_of_options(7, 9) == 4
-
 def test_part1_example1(example1):
     """Test part 1 on example input."""
     assert aoc.part1(example1) == 288

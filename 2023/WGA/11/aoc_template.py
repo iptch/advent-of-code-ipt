@@ -3,76 +3,69 @@
 import pathlib
 import sys
 
-def get_y_expansion_pts(image):
+def get_x_expansion_pts(map):
+    x_expanstion_pts = []
+
+    for x, row in enumerate(map):
+        if all(cell == "." for cell in row):
+            x_expanstion_pts.append(x)
+
+    return x_expanstion_pts
+
+def get_y_expansion_pts(map):
     y_expansion_pts = []
 
-    for i, line in enumerate(image):
-        if line.count(".") == len(line):
-            y_expansion_pts.append(i)
+    for y in range(len(map[0])):
+        if all(cell == "." for cell in [row[y] for row in map]):
+            y_expansion_pts.append(y)
 
     return y_expansion_pts
 
-def get_x_expansion_pts(image):
-    x_expansion_pts = []
-
-    for i in range(0, len(image[0])):
-        col = [x[i] for x in image]
-
-        if col.count(".") == len(col):
-            x_expansion_pts.append(i)
-
-    return x_expansion_pts
-
-def get_galaxies(image):
+def get_galaxies(map):
     galaxies = []
     
-    for i, line in enumerate(image):
-        for j, item in enumerate(line):
-            if item == "#":
-                galaxies.append((i, j))
+    for x, row in enumerate(map):
+        for y, cell in enumerate(row):
+            if cell == "#":
+                galaxies.append((x, y))
 
     return galaxies
 
 def get_galaxy_pairs(galaxies):
     pairs = []
 
-    for i, galaxy_1 in enumerate(galaxies):
-        if i + 1 < len(galaxies):
-            for galaxy_2 in galaxies[i + 1:]:
-                pairs.append([galaxy_1, galaxy_2])
+    for i, g1 in enumerate(galaxies[:-1]):
+        for g2 in galaxies[i+1:]:
+            pairs.append([g1, g2])
 
     return pairs
 
-def get_shortest_dist(galaxy_1, galaxy_2, y_expansion_pts, x_expansion_pts, factor):
-    x = [x for x in x_expansion_pts if x in range(galaxy_1[1] + 1, galaxy_2[1]) or x in range(galaxy_2[1] + 1, galaxy_1[1])]
-    y = [y for y in y_expansion_pts if y in range(galaxy_1[0] + 1, galaxy_2[0]) or y in range(galaxy_2[0] + 1, galaxy_2[0])]
-    
-    return abs(galaxy_1[0] - galaxy_2[0]) + abs(galaxy_1[1] - galaxy_2[1]) + (factor - 1) * (len(x) + len(y))
+def get_shortest_dist(g1, g2, x_expansion_pts, y_expansion_pts, expansion_factor):
+    x1, y1 = g1
+    x2, y2 = g2
+
+    x = [x for x in x_expansion_pts if x in range(x1 + 1, x2) or x in range(x2 + 1, x1)]
+    y = [y for y in y_expansion_pts if y in range(y1 + 1, y2) or y in range(y2 + 1, y1)]
+
+    return abs(x1 - x2) + abs(y1 - y2) + (expansion_factor - 1) * (len(x) + len(y))
 
 def parse(puzzle_input):
     """Parse input."""
-
-    return [list(line) for line in puzzle_input.splitlines()]
+    map = puzzle_input.splitlines()
+    
+    return get_galaxy_pairs(get_galaxies(map)), get_x_expansion_pts(map), get_y_expansion_pts(map)
 
 def part1(data):
     """Solve part 1."""
+    pairs, x_expansion_pts, y_expansion_pts = data
 
-    galaxies = get_galaxies(data)
-    y_expansion_pts = get_y_expansion_pts(data)
-    x_expansion_pts = get_x_expansion_pts(data)
-    pairs = get_galaxy_pairs(galaxies)
-
-    return sum([get_shortest_dist(pair[0], pair[1], y_expansion_pts, x_expansion_pts, 2) for pair in pairs])
+    return sum([get_shortest_dist(g1, g2, x_expansion_pts, y_expansion_pts, 2) for g1, g2 in pairs])
 
 def part2(data):
     """Solve part 2."""
+    pairs, x_expansion_pts, y_expansion_pts = data
 
-    galaxies = get_galaxies(data)
-    y_expansion_pts = get_y_expansion_pts(data)
-    x_expansion_pts = get_x_expansion_pts(data)
-    pairs = get_galaxy_pairs(galaxies)
-
-    return sum([get_shortest_dist(pair[0], pair[1], y_expansion_pts, x_expansion_pts, 1000000) for pair in pairs])
+    return sum([get_shortest_dist(g1, g2, x_expansion_pts, y_expansion_pts, 1000000) for g1, g2 in pairs])
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

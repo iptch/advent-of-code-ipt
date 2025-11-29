@@ -3,54 +3,52 @@
 import pathlib
 import sys
 import re
-import numpy
 
-def get_copies(card):
-    points = 0
+def get_matches(card):
+    winning_numbers, my_numbers = card
+    matches = []
 
-    for number in card[0]:
-        if number in card[1]:
-            points += 1
+    for number in winning_numbers:
+        if number in my_numbers:
+            matches.append(number)
 
-    return points
+    return matches
 
 def parse(puzzle_input):
     """Parse input."""
+    cards = []
 
-    lines = puzzle_input.splitlines()
-    result = [None] * len(lines)
+    for row in puzzle_input.splitlines():
+        winning_numbers, my_numbers = re.sub(r"Card\s+\d+: ", "", row).split(" | ")
 
-    for i, line in enumerate(lines):
-        str = re.sub(r"Card\s+\d+: ", "", line).split("|")
-        winning_numbers = [int(line.group()) for line in list(re.finditer(r"\d+", str[0]))]
-        my_numbers = [int(line.group()) for line in list(re.finditer(r"\d+", str[1]))]
-        result[i] = [winning_numbers, my_numbers]
+        winning_numbers = [int(number) for number in re.findall(r"\d+", winning_numbers)]
+        my_numbers = [int(number) for number in re.findall(r"\d+", my_numbers)]
 
-    return result
+        cards.append((winning_numbers, my_numbers))
+
+    return cards
 
 def part1(data):
     """Solve part 1."""
-
-    result = 0
+    sum = 0
  
     for card in data:
-        copies = get_copies(card)
-        result += 0 if copies == 0 else pow(2, copies - 1)
+        matches_count = len(get_matches(card))
+        sum += 0 if matches_count == 0 else 2 ** (matches_count - 1)
 
-    return result
+    return sum
 
 def part2(data):
     """Solve part 2."""
+    cards_count = [1] * len(data)
 
-    cards = numpy.ones(len(data), dtype=int)
+    for i, card in enumerate(data):
+        matches_count = len(get_matches(card))
 
-    for i, card in enumerate(cards):
-        copies = get_copies(data[i])
+        for j in range(i+1, i+matches_count+1):
+            cards_count[j] += cards_count[i]
 
-        for k in range(i + 1, min(i + copies + 1, len(cards))):
-            cards[k] += card
-
-    return numpy.sum(cards)
+    return sum(cards_count)
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

@@ -11,8 +11,7 @@ def binary_search(low, high, bytes, x_limit, y_limit):
         mid = (high + low) // 2
         map = [["."] * (x_limit) for _ in range(y_limit)]
 
-        for byte in bytes[:mid]:
-            x, y = byte
+        for x, y in bytes[:mid]:
             map[y][x] = "#"
 
         result = dijkstra((0, 0), (y_limit-1, x_limit-1), map)
@@ -63,9 +62,8 @@ def part1(data):
     bytes, x_limit, y_limit = data
     map = [["."] * (x_limit) for _ in range(y_limit)]
 
-    for i, byte in enumerate(bytes):
+    for i, (x, y) in enumerate(bytes):
         if i < (12 if x_limit == 7 else 1024):
-            x, y = byte
             map[y][x] = "#"
 
     return dijkstra((0, 0), (y_limit-1, x_limit-1), map)

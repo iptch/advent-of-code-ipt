@@ -9,15 +9,12 @@ FREQUENCIES = ascii_letters + "0123456789"
 def get_antinodes(puzzle_part, locations, map_size):
     antinodes = []
 
-    for i, location in enumerate(locations):
-        x, y = location
-
-        for j in range(i+1, len(locations)):
-            jx, jy = locations[j]
-            dx, dy = x - jx, y - jy
+    for i, (x1, y1) in enumerate(locations):
+        for x2, y2 in locations[i+1:]:
+            dx, dy = x1 - x2, y1 - y2
 
             for k in [-2, 1] if puzzle_part == 1 else range(-map_size, map_size):
-                nx, ny = x + k * dx, y + k * dy
+                nx, ny = x1 + k * dx, y1 + k * dy
                 
                 if nx >= 0 and nx < map_size and ny >= 0 and ny < map_size:
                     antinodes.append((nx, ny))
@@ -31,7 +28,7 @@ def parse(puzzle_input):
 
     for x, row in enumerate(map):
         for y, cell in enumerate(row):
-            if map[x][y] != ".":
+            if cell != ".":
                 locations.append((x, y, cell))
 
     return map, locations

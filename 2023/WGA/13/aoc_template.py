@@ -3,92 +3,71 @@
 import pathlib
 import sys
 
-def transpose(pattern):
-    return [[row[i] for row in pattern] for i in range(len(pattern[0]))]
+def transpose(matrix):
+    return [[row[i] for row in matrix] for i in range(len(matrix[0]))]
 
-def is_diff_by_one(str1, str2):
-    count = 0
+def has_smudge(row1, row2):
+    counter = 0
 
-    for i, char1 in enumerate(str1):
-        if char1 != str2[i]:
-            count += 1
-            if count > 1:
-                return False
+    for x1, x2 in zip(row1, row2):
+        if x1 != x2:
+            if counter > 0: return False
+            counter += 1
 
-    if count == 1:
+    if counter == 1:
         return True
     
     return False
 
-def is_reflection(i, pattern, has_smudge = False):
-    count = 0
+def has_reflection(i, pattern, puzzle_part):
+    counter = 0
 
-    for j in range(1, min(i, len(pattern) - i)):
-        if has_smudge and is_diff_by_one(pattern[i - 1 - j], pattern[i + j]):
-            count += 1
-            if count > 1:
-                return False
-        elif pattern[i - 1 - j] != pattern[i + j]:
+    for row1, row2 in zip(reversed(pattern[:i+1]), pattern[i+1:]):
+        if puzzle_part == 2 and has_smudge(row1, row2):
+            if counter > 0: return False
+            counter += 1
+        elif row1 != row2:
             return False
-        
+
+    if puzzle_part == 2 and counter != 1:
+        return False
+       
     return True
 
-def get_reflections(pattern, has_smudge = False):
-    result = []
+def get_reflection(pattern, puzzle_part):
+    for i in range(len(pattern)-1):
+        if has_reflection(i, pattern, puzzle_part):
+            return i + 1
 
-    for i in range(1, len(pattern)):
-        if pattern[i - 1] == pattern[i]:
-            if is_reflection(i, pattern, has_smudge):
-                result.append(i)
-        elif has_smudge and is_diff_by_one(pattern[i - 1], pattern[i]):
-            if is_reflection(i, pattern):
-                result.append(i)
-
-    return result
+    return 0
 
 def parse(puzzle_input):
     """Parse input."""
-
-    patterns = []
-    pattern = []
-
-    for line in puzzle_input.splitlines():
-        if line == "":
-            patterns.append(pattern)
-            pattern = []
-        else:
-            pattern.append(line)
-
-    patterns.append(pattern)
-
-    return patterns
+    return [[row for row in pattern.splitlines()] for pattern in puzzle_input.split("\n\n")]
 
 def part1(data):
     """Solve part 1."""
-
-    result = 0
+    sum = 0
 
     for pattern in data:
-        h_reflections = get_reflections(pattern)
-        v_reflections = get_reflections(transpose(pattern))
+        h_reflection = get_reflection(pattern, 1)
+        v_reflection = get_reflection(transpose(pattern), 1)
 
-        result += sum(v_reflections) + 100 * sum(h_reflections)
+        sum += v_reflection + 100 * h_reflection
 
-    return result
+    return sum
 
 def part2(data):
     """Solve part 2."""
-
-    result = 0
+    sum = 0
 
     for pattern in data:
-        transposed = transpose(pattern)
-        h_reflections_with_smudge = [item for item in get_reflections(pattern, True) if item not in get_reflections(pattern)]
-        v_reflections_with_smudge = [item for item in get_reflections(transposed, True) if item not in get_reflections(transposed)]
+        h_reflection = get_reflection(pattern, 2)
+        v_reflection = get_reflection(transpose(pattern), 2)
 
-        result += sum(v_reflections_with_smudge) + 100 * sum(h_reflections_with_smudge)
+        sum += v_reflection + 100 * h_reflection
 
-    return result
+    return sum
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

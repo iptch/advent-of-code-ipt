@@ -3,15 +3,12 @@
 import pathlib
 import sys
 
-def get_diff(numbers):
-    return [numbers[i + 1] - numbers[i] for i in range(len(numbers) - 1)]
-
-def get_prediction(line, forwards = True):                      
-    sequences = [line if forwards else list(reversed(line))]
+def get_prediction(row, extrapolate_forwards):                      
+    sequences = [row if extrapolate_forwards else list(reversed(row))]
     i = 0
 
     while any(number != 0 for number in sequences[i]):
-        sequences.append(get_diff(sequences[i]))
+        sequences.append([m-l for l, m in zip(sequences[i][:-1], sequences[i][1:])])
         i += 1
 
     prediction = sequences[-1][-1]
@@ -23,18 +20,15 @@ def get_prediction(line, forwards = True):
 
 def parse(puzzle_input):
     """Parse input."""
-
-    return [[int(number) for number in line.split()] for line in puzzle_input.splitlines()]
+    return [[int(cell) for cell in row.split()] for row in puzzle_input.splitlines()]
 
 def part1(data):
     """Solve part 1."""
-
-    return sum([get_prediction(line) for line in data])
+    return sum([get_prediction(row, True) for row in data])
 
 def part2(data):
     """Solve part 2."""
-
-    return sum([get_prediction(line, False) for line in data])
+    return sum([get_prediction(row, False) for row in data])
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

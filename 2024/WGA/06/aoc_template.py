@@ -6,111 +6,66 @@ import re
 
 sys.setrecursionlimit(10000)
 
-REGEX = r"\^|>|v|<"
+DIRECTIONS = {"^": (-1, 0), ">": (0, 1), "v": (1, 0), "<": (0, -1)}
 
-def rmv_duplicate_positions(route):
-    distict_positions = [route[0]]
+def get_distinct_positions(route):
+    distinct_positions = {}
 
-    for i in range(1, len(route)):
-        if (route[i][0], route[i][1]) in [(x[0], x[1]) for x in distict_positions]:
-            continue
-        else:
-            distict_positions.append(route[i])
+    for x, y, dir in route:
+        if (x, y) not in distinct_positions:
+            distinct_positions[(x, y)] = (x, y, dir)
 
-    return distict_positions
+    return list(distinct_positions.values())
 
 def patrol(route, map):
-    position_u = (route[-1][0]-1, route[-1][1])
-    position_r = (route[-1][0], route[-1][1]+1)
-    position_d = (route[-1][0]+1, route[-1][1])
-    position_l = (route[-1][0], route[-1][1]-1)
+    x, y, dir = route[-1]
+    dx, dy = DIRECTIONS[dir]
+    nx, ny = x + dx, y + dy
+    ndir = list(DIRECTIONS)[(list(DIRECTIONS).index(dir)+1)%4]
 
-    if route[-1][2] == "^":
-        if position_u[0] < 0:
-            return False
-        elif map[position_u[0]][position_u[1]] == "#":
-            route.append((route[-1][0], route[-1][1], ">"))
-            return patrol(route, map)
-        else:
-            if (position_u[0], position_u[1], "^") in route:
-                return True
-            else:
-                route.append((position_u[0], position_u[1], "^"))
-                return patrol(route, map)
-    elif route[-1][2] == ">":
-        if position_r[1] > len(map[0])-1:
-            return False
-        elif map[position_r[0]][position_r[1]] == "#":
-            route.append((route[-1][0], route[-1][1], "v"))
-            return patrol(route, map)
-        else:
-            if (position_r[0], position_r[1], ">") in route:
-                return True
-            else:
-                route.append((position_r[0], position_r[1], ">"))
-                return patrol(route, map)
-    elif route[-1][2] == "v":
-        if position_d[0] > len(map)-1:
-            return False
-        elif map[position_d[0]][position_d[1]] == "#":
-            route.append((route[-1][0], route[-1][1], "<"))
-            return patrol(route, map)
-        else:
-            if (position_d[0], position_d[1], "v") in route:
-                return True
-            else:
-                route.append((position_d[0], position_d[1], "v"))
-                return patrol(route, map)
+    if nx < 0 or nx >= len(map) or ny < 0 or ny >= len(map[nx]):
+        return (route, False)
+    elif map[nx][ny] == "#":
+        return patrol(route + [(x, y, ndir)], map)
     else:
-        if position_l[1] < 0:
-            return False
-        elif map[position_l[0]][position_l[1]] == "#":
-            route.append((route[-1][0], route[-1][1], "^"))
-            return patrol(route, map)
+        if (nx, ny, dir) in route:
+            return (route, True)
         else:
-            if (position_l[0], position_l[1], "<") in route:
-                return True
-            else:
-                route.append((position_l[0], position_l[1], "<"))
-                return patrol(route, map)
-
-def find_start_position(map):
-    for i in range(len(map)):
-        res = re.search(REGEX, "".join(map[i]))
-
-        if res:
-            return (i, res.start(), map[i][res.start()])
-
-    return None
+            return patrol(route + [(nx, ny, dir)], map)
 
 def parse(puzzle_input):
     """Parse input."""
-    return [list(row) for row in puzzle_input.splitlines()]
+    map = [row for row in puzzle_input.splitlines()]
+    x_start = y_start = dir_start = None
+
+    for i, row in enumerate(map):
+        match = re.search(r"\^|>|v|<", row)
+        map[i] = list(row)
+
+        if match:
+            x_start, y_start, dir_start = i, match.start(), row[match.start()]
+
+    return map, (x_start, y_start, dir_start)
 
 def part1(data):
     """Solve part 1."""
-    route = [find_start_position(data)]
-    patrol(route, data)
-    distinct_positions = rmv_duplicate_positions(route)
+    map, start = data
 
-    return len(distinct_positions)
+    return len(get_distinct_positions(patrol([start], map)[0]))
 
 def part2(data):
     """Solve part 2."""
-    route = [find_start_position(data)]
-    patrol(route, data)
-    distinct_positions = rmv_duplicate_positions(route)
-
+    map, start = data
+    distinct_positions = get_distinct_positions(patrol([start], map)[0])
     sum = 0
 
-    for i in range(1, len(distinct_positions)):
-        data[distinct_positions[i][0]][distinct_positions[i][1]] = "#"
-        has_loop = patrol([distinct_positions[0]], data)
+    for i, (x, y, dir) in enumerate(distinct_positions[1:]):
+        map[x][y] = "#"
 
-        if has_loop:
+        if patrol([distinct_positions[i-1]], map)[1]:
             sum += 1
 
-        data[distinct_positions[i][0]][distinct_positions[i][1]] = "."
+        map[x][y] = "."
 
     return sum
 
