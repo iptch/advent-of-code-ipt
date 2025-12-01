@@ -20,6 +20,11 @@ cargo run --bin day-XY
 
 ## Adding a Solution
 
+> [!NOTE]
+> In order to adhere to the [Advent of Code FAQ section on copying][aoc_faq_copying],
+> the `input.txt` of the individual days is `.gitignore`d and should not be
+> commited.
+
 1. Make a copy of `template/` named `day-XY/`, it will automatically be part of
 the cargo workspace
 1. Fill the `example.txt` with the example input from AoC
@@ -28,10 +33,6 @@ the cargo workspace
    1. Set expected example outputs in tests
    2. Modify `Input` struct to match the problem and implement parsing logic
    3. Solve problems and implement solutions
-
-> [!NOTE]
-> As per the [Advent of Code FAQ section on copying][aoc_faq_copying], the
-> `input.txt` of the individual days is `.gitignore`d and should not be shared.
 
 
 [aoc_faq_copying]: https://adventofcode.com/2025/about#faq_copying
