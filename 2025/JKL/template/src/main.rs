@@ -5,7 +5,7 @@ struct Input {}
 impl FromStr for Input {
     type Err = std::num::ParseIntError;
     fn from_str(raw_input: &str) -> Result<Self, Self::Err> {
-        Ok(Input {})
+        todo!("modify Input struct and implement parsing logic")
     }
 }
 
@@ -18,11 +18,11 @@ fn main() {
 }
 
 fn puzzle_1(input: Input) -> i32 {
-    todo!()
+    todo!("implement part 1 solution")
 }
 
 fn puzzle_2(input: Input) -> i32 {
-    todo!()
+    todo!("implement part 2 solution")
 }
 
 #[cfg(test)]
@@ -34,12 +34,12 @@ mod test {
     #[test]
     fn test_puzzle_1() {
         let answer = puzzle_1(INPUT.parse().unwrap());
-        assert_eq!(answer, todo!());
+        assert_eq!(answer, todo!("replace with part 1 example solution"));
     }
 
     #[test]
     fn test_puzzle_2() {
         let answer = puzzle_2(INPUT.parse().unwrap());
-        assert_eq!(answer, todo!());
+        assert_eq!(answer, todo!("replace with path 2 example solution"));
     }
 }
