@@ -27,6 +27,7 @@ cargo run --bin day-XY
 
 1. Make a copy of `template/` named `day-XY/`, it will automatically be part of
 the cargo workspace
+1. Update `Cargo.toml` with correct day
 1. Fill the `example.txt` with the example input from AoC
 1. Fill the `input.txt` with your personal problem input from AoC
 1. Address `todo!("...")` in the code
