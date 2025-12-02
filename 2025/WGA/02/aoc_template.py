@@ -7,18 +7,12 @@ def get_invalid_ids(ids, puzzle_part):
     invalid_ids = []
 
     for id in ids:
-        min_len = 1
+        max_reps = 2 if puzzle_part == 1 else len(id)
 
-        if puzzle_part == 1:
-            quotient, remainder = divmod(len(id), 2)
+        for i in range(2, max_reps+1):
+            quotient, remainder = divmod(len(id), i)
 
-            if remainder == 0:
-                min_len = quotient
-            else:
-                continue
-
-        for i in range(min_len, len(id) // 2 + 1):
-            if id[:i] * (len(id) // i) == id:
+            if remainder == 0 and id[:quotient] * i == id:
                 invalid_ids.append(int(id))
                 break
 
