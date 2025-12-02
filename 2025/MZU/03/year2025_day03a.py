@@ -2,22 +2,12 @@ from timeit import default_timer as timer
 
 from aocd import data
 
-DAY = '02'
+DAY = '03'
 PART = 'a'
-
-
-def is_invalid(id):
-    if len(id) % 2 != 0:
-        return False
-    return all(id[i] == id[len(id)//2+i] for i in range(len(id) // 2))
 
 
 def solve(lines):
     result = 0
-    for begin, end in [r.split('-') for r in lines[0].split(',')]:
-        for id in range(int(begin), int(end) + 1):
-            if is_invalid(str(id)):
-                result += id
     return result
 
 
