@@ -1,23 +1,23 @@
 import unittest
 
-import year2025_day03a as part_a
-import year2025_day03b as part_b
+import year2025_day04a as part_a
+import year2025_day04b as part_b
 
 
 class Test(unittest.TestCase):
 
     def test_part_a_with_example_data(self):
-        with open('./2025/MZU/03/test-data-a') as file:
+        with open('./2025/MZU/04/test-data-a') as file:
             lines = [line.strip() for line in file.readlines()]
             result = part_a.solve(lines)
-            self.assertEqual(357, result)
+            self.assertEqual(0, result)
             print(result)
 
     def test_part_b_with_example_data(self):
-        with open('./2025/MZU/03/test-data-b') as file:
+        with open('./2025/MZU/04/test-data-b') as file:
             lines = [line.strip() for line in file.readlines()]
             result = part_b.solve(lines)
-            self.assertEqual(3121910778619, result)
+            self.assertEqual(0, result)
             print(result)
 
 

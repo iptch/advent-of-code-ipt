@@ -5,9 +5,21 @@ from aocd import data
 DAY = '03'
 PART = 'b'
 
+N = 12
+
 
 def solve(lines):
     result = 0
+    for line in lines:
+        numbers = [int(n) for n in  line]
+        joltage = ""
+        last_index = -1
+        for i in range(N-1):
+            highest_number = max(numbers[last_index+1:-(N-(i+1))])
+            last_index = numbers[last_index+1:-(N-(i+1))].index(highest_number) + last_index + 1
+            joltage += str(highest_number)
+        joltage += str(max(numbers[last_index+1:]))
+        result += int(joltage)
     return result
 
 

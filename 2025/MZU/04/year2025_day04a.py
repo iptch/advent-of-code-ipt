@@ -2,19 +2,12 @@ from timeit import default_timer as timer
 
 from aocd import data
 
-DAY = '03'
+DAY = '04'
 PART = 'a'
 
 
 def solve(lines):
     result = 0
-    for line in lines:
-        numbers = [int(n) for n in  line]
-        highest_number = max(numbers[0:-1])
-        first_index = numbers.index(highest_number)
-        second_highest_number = max(numbers[first_index+1:])
-        joltage = int(f"{highest_number}{second_highest_number}")
-        result += joltage
     return result
 
 
