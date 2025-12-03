@@ -1,4 +1,5 @@
 .idea/**
 .DS_Store
 input.txt
+!*/JKL/**/input.txt
 venv
