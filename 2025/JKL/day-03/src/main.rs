@@ -25,29 +25,19 @@ fn main() {
     println!("The solution to part 2 is '{}'", answer);
 }
 
-fn puzzle_1(input: Input) -> u32 {
-    input.banks.iter().map(|bank| find_max_in_bank(bank)).sum()
-}
-
-fn find_max_in_bank(bank: &Vec<u32>) -> u32 {
-    let max = bank[..bank.len() - 1].iter().max().unwrap();
-    let max_id = bank[..bank.len() - 1]
+fn puzzle_1(input: Input) -> u64 {
+    input
+        .banks
         .iter()
-        .enumerate()
-        .find(|(_, val)| *val == max)
-        .unwrap()
-        .0;
-
-    let second_max = bank[max_id + 1..].iter().max().unwrap();
-
-    max * 10 + second_max
+        .map(|bank| find_max_in_bank(bank, 2))
+        .sum()
 }
 
 fn puzzle_2(input: Input) -> u64 {
     input
         .banks
         .iter()
-        .map(|bank| find_max_in_bank_dp(bank, 12))
+        .map(|bank| find_max_in_bank(bank, 12))
         .sum()
 }
 
@@ -61,16 +51,16 @@ fn puzzle_2(input: Input) -> u64 {
 ///   result
 /// - `dp[i - 1][j - 1] * 10 + bank[j - 1]`: using the digit, thus appending the maximum for
 ///   `bank[0..j-1]` with the current digit
-fn find_max_in_bank_dp(bank: &Vec<u32>, digits: usize) -> u64 {
+fn find_max_in_bank(bank: &Vec<u32>, digits: usize) -> u64 {
     let mut dp = vec![vec![0_u64; bank.len() + 1]; digits + 1];
 
-    for i in 1..=12 {
+    for i in 1..=digits {
         for j in 1..=bank.len() {
             dp[i][j] = u64::max(dp[i][j - 1], dp[i - 1][j - 1] * 10 + bank[j - 1] as u64)
         }
     }
 
-    dp[12][bank.len()]
+    dp[digits][bank.len()]
 }
 
 #[cfg(test)]
