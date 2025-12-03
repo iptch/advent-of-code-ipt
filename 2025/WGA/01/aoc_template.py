@@ -21,9 +21,9 @@ def dial(old_pos, rotation):
     return remainder, abs(quotient)
 
 def parse(puzzle_input):
-    rows = puzzle_input.splitlines()
+    """Parse input."""
     
-    return rows
+    return puzzle_input.splitlines()
 
 def part1(data):
     """Solve part 1."""
