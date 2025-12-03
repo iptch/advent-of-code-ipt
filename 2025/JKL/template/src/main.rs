@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+#[derive(Debug)]
 struct Input {}
 
 impl FromStr for Input {
