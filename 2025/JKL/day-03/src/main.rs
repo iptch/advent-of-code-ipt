@@ -47,12 +47,22 @@ fn puzzle_2(input: Input) -> u64 {
     input
         .banks
         .iter()
-        .map(|bank| find_max_in_bank_dp(bank))
+        .map(|bank| find_max_in_bank_dp(bank, 12))
         .sum()
 }
 
-fn find_max_in_bank_dp(bank: &Vec<u32>) -> u64 {
-    let mut dp = vec![vec![0_u64; bank.len() + 1]; 13];
+/// Computes the largest number that can be build from the digits in `bank` using `digits` many digits.
+///
+/// The solution works using dynamic programming, where `dp[i][j]` represents the largest number
+/// that can be build using `i` digits using the digits in `bank[0..j]`.
+///
+/// `dp[i][j]` is computed as the max of:
+/// - `dp[i][j - 1]`: not using the current digit, thus the result is the same as the previous
+///   result
+/// - `dp[i - 1][j - 1] * 10 + bank[j - 1]`: using the digit, thus appending the maximum for
+///   `bank[0..j-1]` with the current digit
+fn find_max_in_bank_dp(bank: &Vec<u32>, digits: usize) -> u64 {
+    let mut dp = vec![vec![0_u64; bank.len() + 1]; digits + 1];
 
     for i in 1..=12 {
         for j in 1..=bank.len() {
