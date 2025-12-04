@@ -27,29 +27,27 @@ def parse(puzzle_input):
 
 def part1(data):
     """Solve part 1."""
-
-    res = 0
+    sum = 0
     pos = 50
 
     for rotation in data:
         pos, _ = dial(pos, rotation)
 
         if pos == 0:
-            res += 1
+            sum += 1
 
-    return res
+    return sum
 
 def part2(data):
     """Solve part 2."""
-
-    res = 0
+    sum = 0
     pos = 50
 
     for rotation in data:
         pos, clicks = dial(pos, rotation)
-        res += clicks
+        sum += clicks
 
-    return res
+    return sum
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""
