@@ -7,8 +7,15 @@ PART = 'a'
 
 
 def solve(lines):
-    result = 0
-    return result
+    fresh_ingredient_ranges_lines = [line for line in lines if '-' in line]
+    fresh_ingredient_ranges = [tuple([int(n) for n in line.split('-')]) for line in fresh_ingredient_ranges_lines]
+
+    id_lines = lines[len(fresh_ingredient_ranges)+1:]
+    ids = [int(line) for line in id_lines]
+
+    valid_ids = set([id for id in ids if any(id >= start and id <= end for start, end in fresh_ingredient_ranges)])
+            
+    return len(valid_ids)
 
 
 def main():
