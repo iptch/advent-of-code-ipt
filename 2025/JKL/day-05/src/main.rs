@@ -41,12 +41,13 @@ fn puzzle_1(input: Input) -> i64 {
 }
 
 fn in_range(ranges: &Vec<(i64, i64)>, product: i64) -> bool {
-    let binary_search_by = ranges.binary_search_by(|(lower, upper)| match product {
-        p if p < *lower => Ordering::Greater,
-        p if p > *upper => Ordering::Less,
-        _ => Ordering::Equal,
-    });
-    binary_search_by.is_ok()
+    ranges
+        .binary_search_by(|(lower, upper)| match product {
+            p if p < *lower => Ordering::Greater,
+            p if p > *upper => Ordering::Less,
+            _ => Ordering::Equal,
+        })
+        .is_ok()
 }
 
 fn puzzle_2(input: Input) -> i64 {
