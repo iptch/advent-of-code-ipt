@@ -3,6 +3,9 @@
 import pathlib
 import sys
 
+def deepcopy(matrix):
+    return [row[:] for row in matrix]
+
 def count_splits(x, y, map):
     nx = x + 1
 
@@ -65,12 +68,12 @@ def parse(puzzle_input):
 def part1(data):
     """Solve part 1."""
 
-    return count_splits(0, data[0].index("S"), [row[:] for row in data])
+    return count_splits(0, data[0].index("S"), deepcopy(data))
 
 def part2(data):
     """Solve part 2."""
 
-    return count_timelines(0, data[0].index("S"), [row[:] for row in data])
+    return count_timelines(0, data[0].index("S"), deepcopy(data))
 
 def solve(puzzle_input):
     """Solve the puzzle for the given input."""

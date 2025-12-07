@@ -2,13 +2,15 @@
 
 import pathlib
 import sys
-import copy
 
 class Direction:
     NORTH = (-1, 0)
     WEST = (0, -1)
     SOUTH = (1, 0)
     EAST = (0, 1)
+
+def deepcopy(matrix):
+    return [row[:] for row in matrix]
 
 def add_tupels(a, b):
     return (a[0] + b[0], a[1] + b[1])
@@ -91,7 +93,7 @@ def parse(puzzle_input):
 def part1(data):
     """Solve part 1."""
 
-    energized = move((0, 0), Direction.EAST, copy.deepcopy(data), copy.deepcopy(data))
+    energized = move((0, 0), Direction.EAST, deepcopy(data), deepcopy(data))
 
     return sum([line.count("#") for line in energized])
 
@@ -101,17 +103,17 @@ def part2(data):
     count = []
 
     for y in range(len(data)):
-        energized = move((y, 0), Direction.EAST, copy.deepcopy(data), copy.deepcopy(data))
+        energized = move((y, 0), Direction.EAST, deepcopy(data), deepcopy(data))
         count.append(sum([line.count("#") for line in energized]))
 
-        energized = move((y, len(data[0]) - 1), Direction.WEST, copy.deepcopy(data), copy.deepcopy(data))
+        energized = move((y, len(data[0]) - 1), Direction.WEST, deepcopy(data), deepcopy(data))
         count.append(sum([line.count("#") for line in energized]))
 
     for x in range(len(data[0])):
-        energized = move((0, x), Direction.SOUTH, copy.deepcopy(data), copy.deepcopy(data))
+        energized = move((0, x), Direction.SOUTH, deepcopy(data), deepcopy(data))
         count.append(sum([line.count("#") for line in energized]))
 
-        energized = move((len(data) - 1, x), Direction.NORTH, copy.deepcopy(data), copy.deepcopy(data))
+        energized = move((len(data) - 1, x), Direction.NORTH, deepcopy(data), deepcopy(data))
         count.append(sum([line.count("#") for line in energized]))
 
     return max(count)
