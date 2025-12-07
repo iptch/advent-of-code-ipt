@@ -7,8 +7,24 @@ PART = 'b'
 
 
 def solve(lines):
-    result = 0
-    return result
+    grid = []
+    for line in lines:
+        grid.append([i for i in line])
+
+    n_paths = [[0 for i in range(len(grid[0]))] for j in range(len(grid))]
+    for c in range(len(grid[0])):
+        if grid[0][c] == 'S':
+            n_paths[0][c] = 1
+
+    for r in range(1, len(grid), 1):
+        for c in range(len(grid[0])):
+            if grid[r][c] == '^':
+                n_paths[r][c-1] += n_paths[r-1][c]
+                n_paths[r][c+1] += n_paths[r-1][c]
+            else:
+                n_paths[r][c] += n_paths[r-1][c]
+
+    return sum(n_paths[-1])
 
 
 def main():

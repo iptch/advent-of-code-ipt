@@ -8,6 +8,21 @@ PART = 'a'
 
 def solve(lines):
     result = 0
+
+    grid = []
+    for line in lines:
+        grid.append([i for i in line])
+
+    for r in range(1, len(grid), 1):
+        for c in range(len(grid[0])):
+            if grid[r-1][c] in 'S|':
+                if grid[r][c] == '.':
+                    grid[r][c] = '|'
+                elif grid[r][c] == '^':
+                    grid[r][c-1] = '|'
+                    grid[r][c+1] = '|'
+                    result += 1
+
     return result
 
 
