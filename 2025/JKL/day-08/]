@@ -1,0 +1,83 @@
+use std::str::FromStr;
+
+use itertools::Itertools;
+
+#[derive(Debug)]
+struct Input {
+    boxes: Vec<Box>,
+}
+
+#[derive(Debug)]
+struct Box {
+    x: i32,
+    y: i32,
+    z: i32,
+}
+
+impl FromStr for Input {
+    type Err = std::num::ParseIntError;
+    fn from_str(raw_input: &str) -> Result<Self, Self::Err> {
+        Ok(Input {
+            boxes: raw_input
+                .lines()
+                .map(|line| { line.parse()? })
+                .collect(),
+        })
+    }
+}
+
+impl FromStr for Box {
+    type Err = std::num::ParseIntError;
+    fn from_str(raw_input: &str) -> Result<Self, Self::Err> {
+        let mut coords = raw_input.split(",");
+        Ok(Box {
+            x: coords.next().unwrap().parse()?,
+            y: coords.next().unwrap().parse()?,
+            z: coords.next().unwrap().parse()?,
+        })
+    }
+}
+
+fn main() {
+    let input = include_str!("../input.txt");
+    let answer = puzzle_1(input.parse().unwrap());
+    println!("The solution to part 1 is '{}'", answer);
+    let answer = puzzle_2(input.parse().unwrap());
+    println!("The solution to part 2 is '{}'", answer);
+}
+
+fn puzzle_1(input: Input) -> i32 {
+    let boxes = input.boxes;
+
+    for box1 in boxes {
+        for box2 in boexs {
+            if box1 != box2 {
+
+            }
+        }
+    }
+}
+
+
+fn puzzle_2(input: Input) -> i32 {
+    todo!("implement part 2 solution")
+}
+
+#[cfg(test)]
+mod test {
+    use crate::{puzzle_1, puzzle_2};
+
+    static INPUT: &str = include_str!("../example.txt");
+
+    #[test]
+    fn test_puzzle_1() {
+        let answer = puzzle_1(INPUT.parse().unwrap());
+        assert_eq!(answer, 40);
+    }
+
+    #[test]
+    fn test_puzzle_2() {
+        let answer = puzzle_2(INPUT.parse().unwrap());
+        assert_eq!(answer, todo!("replace with path 2 example solution"));
+    }
+}
