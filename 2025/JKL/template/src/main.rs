@@ -18,11 +18,11 @@ fn main() {
     println!("The solution to part 2 is '{}'", answer);
 }
 
-fn puzzle_1(input: Input) -> i32 {
+fn puzzle_1(input: Input) -> i64 {
     todo!("implement part 1 solution")
 }
 
-fn puzzle_2(input: Input) -> i32 {
+fn puzzle_2(input: Input) -> i64 {
     todo!("implement part 2 solution")
 }
 
