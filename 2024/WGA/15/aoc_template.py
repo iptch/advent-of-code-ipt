@@ -2,11 +2,13 @@
 
 import pathlib
 import sys
-import copy
 
 sys.setrecursionlimit(25000)
 
 DIRECTIONS = {"^": (-1, 0), ">": (0, 1), "v": (1, 0), "<": (0, -1)}
+
+def deepcopy(matrix):
+    return [row[:] for row in matrix]
 
 def get_start(map):
     for x, row in enumerate(map):
@@ -88,7 +90,7 @@ def parse(puzzle_input):
 def part1(data):
     """Solve part 1."""
     map, movements = data
-    map = copy.deepcopy(map)
+    map = deepcopy(map)
 
     x_start, y_start = get_start(map)
 
@@ -99,7 +101,7 @@ def part1(data):
 def part2(data):
     """Solve part 2."""
     map, movements = data
-    map = copy.deepcopy(map)
+    map = deepcopy(map)
 
     for x, row in enumerate(map):
         map[x] = list("".join(row).replace("#", "##").replace("O", "[]").replace(".", "..").replace("@", "@."))
