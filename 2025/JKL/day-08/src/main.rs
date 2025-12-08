@@ -1,5 +1,6 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{collections::BinaryHeap, str::FromStr};
 
+use disjoint::DisjointSet;
 use itertools::Itertools;
 
 #[derive(Debug)]
@@ -26,6 +27,21 @@ impl FromStr for Input {
     }
 }
 
+#[derive(Debug, Eq, PartialEq)]
+struct Edge(usize, usize, i64);
+
+impl Ord for Edge {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.2.cmp(&other.2)
+    }
+}
+
+impl PartialOrd for Edge {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.2.partial_cmp(&other.2)
+    }
+}
+
 impl FromStr for Box {
     type Err = std::num::ParseIntError;
     fn from_str(raw_input: &str) -> Result<Self, Self::Err> {
@@ -46,58 +62,23 @@ fn main() {
     println!("The solution to part 2 is '{}'", answer);
 }
 
-fn puzzle_1(input: Input, n: usize) -> i64 {
+fn puzzle_1(input: Input, iterations: usize) -> i64 {
     let boxes = input.boxes;
+    let n = boxes.len();
 
-    let mut connections = vec![];
+    let mut connections = compute_edges(&boxes, n);
+    let mut sets = DisjointSet::with_len(n);
 
-    for i in 0..boxes.len() {
-        for j in (i + 1)..boxes.len() {
-            connections.push((&boxes[i], &boxes[j], dist(&boxes[i], &boxes[j])));
-        }
-    }
-    connections.sort_by_key(|(_, _, dist)| *dist);
-
-    let mut num_components: i32 = 0;
-    let mut box_to_component: HashMap<&Box, i32> = HashMap::new();
-    let mut component_to_boxes: HashMap<i32, Vec<&Box>> = HashMap::new();
-
-    for i in 0..n {
-        let (box1, box2, _) = connections[i];
-        let box1_comp = box_to_component.get(box1);
-        let box2_comp = box_to_component.get(box2);
-
-        if let Some(comp1) = box1_comp
-            && let Some(comp2) = box2_comp
-        {
-            if comp1 != comp2 {
-                let comp = *comp1;
-                let other_boxes = component_to_boxes.remove(comp2).unwrap();
-                for b in other_boxes {
-                    *box_to_component.get_mut(b).unwrap() = comp;
-                    component_to_boxes.get_mut(&comp).unwrap().push(b);
-                }
-            }
-        } else if let Some(comp1) = box1_comp {
-            let comp = *comp1;
-            box_to_component.insert(box2, comp);
-            component_to_boxes.get_mut(&comp).unwrap().push(box2);
-        } else if let Some(comp2) = box2_comp {
-            let comp = *comp2;
-            box_to_component.insert(box1, comp);
-            component_to_boxes.get_mut(&comp).unwrap().push(box1);
-        } else {
-            let component = num_components;
-            num_components += 1;
-            box_to_component.insert(box1, component);
-            box_to_component.insert(box2, component);
-            component_to_boxes.insert(component, vec![box1, box2]);
+    for _ in 0..iterations {
+        let Edge(i, j, _) = connections.pop().unwrap();
+        if !sets.is_joined(i, j) {
+            sets.join(i, j);
         }
     }
 
-    component_to_boxes
-        .values()
-        .map(|v| v.len() as i64)
+    sets.sets()
+        .into_iter()
+        .map(|set| set.len() as i64)
         .sorted()
         .rev()
         .take(3)
@@ -114,64 +95,32 @@ fn dist(box1: &Box, box2: &Box) -> i64 {
 
 fn puzzle_2(input: Input) -> i64 {
     let boxes = input.boxes;
+    let n = boxes.len();
 
-    let mut connections = vec![];
+    let mut connections = compute_edges(&boxes, n);
+    let mut sets = DisjointSet::with_len(n);
 
-    for i in 0..boxes.len() {
-        for j in (i + 1)..boxes.len() {
-            connections.push((&boxes[i], &boxes[j], dist(&boxes[i], &boxes[j])));
+    let mut num_joins: usize = 0;
+    loop {
+        let Edge(i, j, _) = connections.pop().unwrap();
+        if !sets.is_joined(i, j) {
+            num_joins += sets.join(i, j) as usize;
+        }
+        if num_joins == boxes.len() - 1 {
+            return (boxes[i].x as i64) * (boxes[j].x as i64);
         }
     }
-    connections.sort_by_key(|(_, _, dist)| *dist);
+}
 
-    let mut num_components: i32 = 0;
-    let mut box_to_component: HashMap<&Box, i32> = HashMap::new();
-    let mut component_to_boxes: HashMap<i32, Vec<&Box>> = HashMap::new();
-    let mut largest_component: usize = 0;
-
-    for (box1, box2, _) in connections {
-        let box1_comp = box_to_component.get(box1);
-        let box2_comp = box_to_component.get(box2);
-
-        if let Some(comp1) = box1_comp
-            && let Some(comp2) = box2_comp
-        {
-            if comp1 != comp2 {
-                let comp = *comp1;
-                let other_boxes = component_to_boxes.remove(comp2).unwrap();
-                for b in other_boxes {
-                    *box_to_component.get_mut(b).unwrap() = comp;
-                    component_to_boxes.get_mut(&comp).unwrap().push(b);
-                }
-                largest_component =
-                    largest_component.max(component_to_boxes.get_mut(&comp).unwrap().len())
-            }
-        } else if let Some(comp1) = box1_comp {
-            let comp = *comp1;
-            box_to_component.insert(box2, comp);
-            component_to_boxes.get_mut(&comp).unwrap().push(box2);
-            largest_component =
-                largest_component.max(component_to_boxes.get_mut(&comp).unwrap().len())
-        } else if let Some(comp2) = box2_comp {
-            let comp = *comp2;
-            box_to_component.insert(box1, comp);
-            component_to_boxes.get_mut(&comp).unwrap().push(box1);
-            largest_component =
-                largest_component.max(component_to_boxes.get_mut(&comp).unwrap().len())
-        } else {
-            let component = num_components;
-            num_components += 1;
-            box_to_component.insert(box1, component);
-            box_to_component.insert(box2, component);
-            component_to_boxes.insert(component, vec![box1, box2]);
-            largest_component = largest_component.max(2)
-        }
-
-        if largest_component == boxes.len() {
-            return (box1.x as i64) * (box2.x as i64);
+fn compute_edges(boxes: &Vec<Box>, n: usize) -> BinaryHeap<Edge> {
+    let mut connections = BinaryHeap::with_capacity(n * (n-1));
+    for i in 0..n {
+        for j in (i + 1)..n {
+            // BinaryHeap is a max heap thus we invert the distance
+            connections.push(Edge(i, j, -dist(&boxes[i], &boxes[j])))
         }
     }
-    unreachable!();
+    connections
 }
 
 #[cfg(test)]

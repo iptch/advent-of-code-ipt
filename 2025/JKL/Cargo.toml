@@ -3,3 +3,7 @@ resolver = "2"
 
 members = ["day-*"]
 default-members = ["day-*"]
+
+[profile.release]
+debug = true
+
