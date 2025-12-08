@@ -5,4 +5,3 @@ edition = "2024"
 
 [dependencies]
 itertools = "0.14.0"
-petgraph = "0.8.3"
