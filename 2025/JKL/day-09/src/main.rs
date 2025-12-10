@@ -1,4 +1,4 @@
-use std::{path::absolute, str::FromStr};
+use std::str::FromStr;
 
 #[derive(Debug)]
 struct Input {
